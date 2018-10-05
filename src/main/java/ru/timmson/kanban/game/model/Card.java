@@ -1,5 +1,6 @@
 package ru.timmson.kanban.game.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,16 +11,19 @@ import java.util.stream.Stream;
 
 public class Card {
 
-    public static char CARD_TYPE_F = 'F';
+    public static String CARD_TYPE_F = "F";
 
-    public static char CARD_TYPE_I = 'I';
+    public static String CARD_TYPE_I = "I";
 
-    public static char CARD_TYPE_E = 'E';
+    public static String CARD_TYPE_E = "E";
 
-    public static char CARD_TYPE_S = 'S';
+    public static String CARD_TYPE_S = "S";
 
     @Getter
-    private char type;
+    private String cardId;
+
+    @Getter
+    private String cardType;
 
     @Getter
     private Map<Stage, Integer> estimations;
@@ -34,8 +38,10 @@ public class Card {
     @Setter
     private Integer endDay;
 
-    Card(char type, IntFunction<Integer> value, Estimation... estimations) {
-        this.type = type;
+    @Builder
+    Card(Integer id, String cardType, IntFunction<Integer> value, Estimation... estimations) {
+        this.cardId = cardType + id;
+        this.cardType = cardType;
         this.value = value;
         this.estimations = Stream.of(estimations).collect(Collectors.toMap(Estimation::getStage, Estimation::getPoints));
     }

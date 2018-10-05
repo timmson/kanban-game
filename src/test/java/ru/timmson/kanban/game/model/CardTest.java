@@ -12,11 +12,13 @@ public class CardTest {
 
     @Before
     public void setUp() throws Exception {
-        card = createCardS(ct -> 21 - ct * 2, A(10), D(11), T(0));
+        card = createCardS(1, ct -> 21 - ct * 2, A(10), D(11), T(0));
     }
 
     @Test
     public void test() throws Exception {
+        assertEquals("S1", card.getCardId());
+        assertEquals(Card.CARD_TYPE_S, card.getCardType());
         card.setStartDay(1);
         card.setEndDay(9);
         assertEquals(5, card.calculateValue());
