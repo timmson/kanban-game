@@ -5,15 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Stage {
 
-    public static char STAGE_TYPE_ANALYSIS = 'A';
+    public static Stage STAGE_ANALYSIS = new Stage("A");
 
-    public static char STAGE_TYPE_DEVELOPMENT = 'D';
+    public static Stage STAGE_DEVELOPMENT = new Stage("D");
 
-    public static char STAGE_TYPE_TESTING = 'T';
+    public static Stage STAGE_TESTING = new Stage("T");
 
-    private char type;
+    private String type;
 
 }

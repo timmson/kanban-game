@@ -1,10 +1,10 @@
 package ru.timmson.kanban.game.model;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class Estimation {
 
     private Stage stage;

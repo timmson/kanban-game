@@ -7,19 +7,19 @@ import static ru.timmson.kanban.game.model.Stage.*;
 
 public class CardFactory {
 
-    public static Card createCardF(Integer id, IntFunction<Integer> value, Estimation... estimations) {
+    public static Card F(Integer id, IntFunction<Integer> value, Estimation... estimations) {
         return createCard(id, CARD_TYPE_F, value, estimations);
     }
 
-    public static Card createCardI(Integer id, IntFunction<Integer> value, Estimation... estimations) {
+    public static Card I(Integer id, IntFunction<Integer> value, Estimation... estimations) {
         return createCard(id, CARD_TYPE_I, value, estimations);
     }
 
-    public static Card createCardE(Integer id, IntFunction<Integer> value, Estimation... estimations) {
+    public static Card E(Integer id, IntFunction<Integer> value, Estimation... estimations) {
         return createCard(id, CARD_TYPE_E, value, estimations);
     }
 
-    public static Card createCardS(Integer id, IntFunction<Integer> value, Estimation... estimations) {
+    public static Card S(Integer id, IntFunction<Integer> value, Estimation... estimations) {
         return createCard(id, CARD_TYPE_S, value, estimations);
     }
 
@@ -27,15 +27,19 @@ public class CardFactory {
         return Card.builder().id(id).cardType(cardType).value(value).estimations(estimations).build();
     }
 
-    public static Estimation A(Integer estimation) {
-        return new Estimation(new Stage(STAGE_TYPE_ANALYSIS), estimation);
+    public static Estimation A(Integer points) {
+        return createEstimation(STAGE_ANALYSIS, points);
     }
 
-    public static Estimation D(Integer estimation) {
-        return new Estimation(new Stage(STAGE_TYPE_DEVELOPMENT), estimation);
+    public static Estimation D(Integer points) {
+        return createEstimation(STAGE_DEVELOPMENT, points);
     }
 
-    public static Estimation T(Integer estimation) {
-        return new Estimation(new Stage(STAGE_TYPE_TESTING), estimation);
+    public static Estimation T(Integer points) {
+        return createEstimation(STAGE_TESTING, points);
+    }
+
+    private static Estimation createEstimation(Stage stage, Integer points) {
+        return Estimation.builder().stage(stage).points(points).build();
     }
 }
