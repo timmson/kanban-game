@@ -1,5 +1,7 @@
 package ru.timmson.kanban.game.model;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.IntFunction;
 
 import static ru.timmson.kanban.game.model.Card.*;
@@ -7,39 +9,55 @@ import static ru.timmson.kanban.game.model.Stage.*;
 
 public class CardFactory {
 
-    public static Card F(Integer id, IntFunction<Integer> value, Estimation... estimations) {
-        return createCard(id, CARD_TYPE_F, value, estimations);
+    //////////////////////Cards///////////////////////////////////
+
+    public static Card F(Integer id, IntFunction<Integer> value,  Work... works) {
+        return createCard(id, CARD_TYPE_F, value, Arrays.asList(works));
     }
 
-    public static Card I(Integer id, IntFunction<Integer> value, Estimation... estimations) {
-        return createCard(id, CARD_TYPE_I, value, estimations);
+    public static Card I(Integer id, IntFunction<Integer> value, Work... works) {
+        return createCard(id, CARD_TYPE_I, value, Arrays.asList(works));
     }
 
-    public static Card E(Integer id, IntFunction<Integer> value, Estimation... estimations) {
-        return createCard(id, CARD_TYPE_E, value, estimations);
+    public static Card E(Integer id, IntFunction<Integer> value, Work... works) {
+        return createCard(id, CARD_TYPE_E, value, Arrays.asList(works));
     }
 
-    public static Card S(Integer id, IntFunction<Integer> value, Estimation... estimations) {
-        return createCard(id, CARD_TYPE_S, value, estimations);
+    public static Card S(Integer id, IntFunction<Integer> value, Work... works) {
+        return createCard(id, CARD_TYPE_S, value, Arrays.asList(works));
     }
 
-    private static Card createCard(Integer id, String cardType, IntFunction<Integer> value, Estimation... estimations) {
-        return Card.builder().id(id).cardType(cardType).value(value).estimations(estimations).build();
+    private static Card createCard(Integer id, String cardType, IntFunction<Integer> value, List<Work> works) {
+        return Card.builder().id(id).cardType(cardType).value(value).works(works).build();
     }
 
-    public static Estimation A(Integer points) {
-        return createEstimation(STAGE_ANALYSIS, points);
+
+    //////////////////////Works///////////////////////////////////
+
+    public static Work A(Integer points) {
+        return createWork(STAGE_ANALYSIS, points);
     }
 
-    public static Estimation D(Integer points) {
-        return createEstimation(STAGE_DEVELOPMENT, points);
+    public static Work D(Integer points) {
+        return createWork(STAGE_DEVELOPMENT, points);
     }
 
-    public static Estimation T(Integer points) {
-        return createEstimation(STAGE_TESTING, points);
+    public static Work T(Integer points) {
+        return createWork(STAGE_TESTING, points);
     }
 
-    private static Estimation createEstimation(Stage stage, Integer points) {
-        return Estimation.builder().stage(stage).points(points).build();
+    private static Work createWork(Stage stage, Integer points) {
+        return Work.builder().stage(stage).points(points).build();
+    }
+
+
+    //////////////////////Dice///////////////////////////////////
+
+    public static Dice DICE(DiceSide... diceSides) {
+        return new Dice(Arrays.asList(diceSides));
+    }
+
+    public static DiceSide SIDE(Work... works) {
+        return new DiceSide(Arrays.asList(works));
     }
 }

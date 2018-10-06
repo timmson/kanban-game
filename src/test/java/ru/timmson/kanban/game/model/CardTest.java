@@ -3,6 +3,8 @@ package ru.timmson.kanban.game.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 import static ru.timmson.kanban.game.model.Card.CARD_TYPE_S;
 import static ru.timmson.kanban.game.model.CardFactory.*;
@@ -14,7 +16,7 @@ public class CardTest {
     @Before
     public void setUp() throws Exception {
         card = Card.builder().id(1).cardType(CARD_TYPE_S).value(ct -> 21 - ct * 2)
-                .estimations(A(10), D(11), T(0)).build();
+                .works(Arrays.asList(A(10), D(11), T(0))).build();
     }
 
     @Test
@@ -27,7 +29,8 @@ public class CardTest {
     }
 
     @Test(expected = CardNotFinishedException.class)
-    public void calculateValue() throws Exception {
+    public void testCalculateValue() throws Exception {
         card.calculateValue();
     }
+
 }

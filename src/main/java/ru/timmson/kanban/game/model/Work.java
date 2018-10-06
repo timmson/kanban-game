@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class Estimation {
+public class Work {
 
     private Stage stage;
 

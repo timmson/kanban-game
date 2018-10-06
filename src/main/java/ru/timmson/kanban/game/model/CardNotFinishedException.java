@@ -1,4 +1,4 @@
 package ru.timmson.kanban.game.model;
 
-class CardNotFinishedException extends Exception {
+public class CardNotFinishedException extends Exception {
 }
