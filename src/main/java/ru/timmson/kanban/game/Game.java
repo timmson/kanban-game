@@ -1,6 +1,8 @@
 package ru.timmson.kanban.game;
 
 import org.apache.commons.lang3.Range;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.timmson.kanban.game.model.*;
 
 import java.util.Arrays;
@@ -11,9 +13,14 @@ import static ru.timmson.kanban.game.generator.RandomGenerator.generateCards;
 import static ru.timmson.kanban.game.generator.RandomGenerator.generateStandardDice;
 import static ru.timmson.kanban.game.model.Card.CARD_TYPE_S;
 
+@SpringBootApplication
 public class Game {
 
     public static void main(String[] args) throws Exception {
+        SpringApplication.run(Game.class, args);
+    }
+
+    public static void main1(String[] args) throws Exception {
         LinkedList<Card> backlogQueue = new LinkedList<>(generateCards(CARD_TYPE_S, 100, Range.between(1, 10), Stage.STAGE_ANALYSIS, Stage.STAGE_DEVELOPMENT, Stage.STAGE_TESTING));
 
         Column analyzing = Column.builder().stage(Stage.STAGE_ANALYSIS).wipLimit(10).toDoQueue(backlogQueue).isOutputQueueLimited(true).build();
@@ -41,7 +48,7 @@ public class Game {
 
         testing.getDoneQueue().stream().sorted(Comparator.comparing(Card::getCardId)).forEach(i -> {
             try {
-                System.out.println(i.getCardId()+ "\t" + i.getStartDay() + "\t" + i.getEndDay() + "\t" + i.getCycleTime() + "\t");
+                System.out.println(i.getCardId() + "\t" + i.getStartDay() + "\t" + i.getEndDay() + "\t" + i.getCycleTime() + "\t");
             } catch (CardNotFinishedException e) {
                 e.printStackTrace();
             }
