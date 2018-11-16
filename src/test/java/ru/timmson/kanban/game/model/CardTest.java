@@ -15,8 +15,7 @@ public class CardTest {
 
     @Before
     public void setUp() throws Exception {
-        card = Card.builder().id(1).cardType(CARD_TYPE_S).value(ct -> 21 - ct * 2)
-                .works(Arrays.asList(A(10), D(11), T(0))).build();
+        card = new Card(1, CARD_TYPE_S, ct -> 21 - ct * 2, Arrays.asList(A(10), D(11), T(0)));
     }
 
     @Test

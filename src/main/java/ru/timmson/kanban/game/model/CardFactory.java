@@ -28,7 +28,7 @@ public class CardFactory {
     }
 
     private static Card createCard(Integer id, String cardType, IntFunction<Integer> value, List<Work> works) {
-        return Card.builder().id(id).cardType(cardType).value(value).works(works).build();
+        return new Card(id, cardType, value, works);
     }
 
 
@@ -47,7 +47,7 @@ public class CardFactory {
     }
 
     private static Work createWork(Stage stage, Integer points) {
-        return Work.builder().stage(stage).points(points).build();
+        return new Work(stage,points);
     }
 
 
