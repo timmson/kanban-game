@@ -28,7 +28,7 @@ class Card(id: Int, var cardType: String, var value: (Int) -> Int, works: List<W
     var endDay = 0
 
     init {
-        cardId = cardType + id
+        cardId = cardType + id.toString().padStart(3, '0')
         estimations = works.map { it.stage to it.points }.toMap()
         remainings = estimations.toMutableMap()
 

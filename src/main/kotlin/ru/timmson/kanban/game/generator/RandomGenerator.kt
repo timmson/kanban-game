@@ -7,7 +7,7 @@ import java.util.*
 class RandomGenerator {
 
     companion object {
-        val random = Random()
+        private val random = Random()
 
         @JvmStatic fun generateStandardDice(count: Int, primaryRange: Range<Int>, primaryStage: Stage, secondaryRange: Range<Int>, vararg secondaryStages: Stage): Dice {
             return Dice(IntRange(1, count).map { DiceSide(listOf(createWork(primaryStage, primaryRange)).plus(secondaryStages.map { stage -> createWork(stage, secondaryRange) })) })

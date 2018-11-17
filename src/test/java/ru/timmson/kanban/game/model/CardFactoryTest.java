@@ -22,12 +22,12 @@ public class CardFactoryTest {
 
     @Test
     public void testDice() {
-        Dice dice = DICE(
-                SIDE(A(1), D(1), T(1)),
-                SIDE(A(1), D(1), T(1)),
-                SIDE(A(1), D(1), T(1)),
-                SIDE(A(1), D(1), T(1)),
-                SIDE(A(1), D(1), T(1))
+        Dice dice = dice(
+                side(a(1), d(1), t(1)),
+                side(a(1), d(1), t(1)),
+                side(a(1), d(1), t(1)),
+                side(a(1), d(1), t(1)),
+                side(a(1), d(1), t(1))
         );
         assertNotNull(dice.roll(Stage.STAGE_DEVELOPMENT));
     }
