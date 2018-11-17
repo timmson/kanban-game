@@ -4,13 +4,9 @@ import java.util.*
 
 class Column(var stage: Stage, var wipLimit: Int, private val toDoQueue: LinkedList<Card>, val isOutputQueueLimited: Boolean) {
 
-    private val wipQueue = LinkedList<Card>()
+    val wipQueue = LinkedList<Card>()
 
     val doneQueue = LinkedList<Card>()
-
-    fun getWipSize(): Int {
-        return wipQueue.size
-    }
 
     fun handle(dices: List<Dice>, currentDay: Int) {
         var points = dices.sumBy { dice -> dice.roll(stage)!! }
