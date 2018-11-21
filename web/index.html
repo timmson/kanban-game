@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body onload="go();">
+<h2>Kanban game</h2>
+<canvas id="canvas" width="1700" height="1000">
+    current stock price: $3.15 + 0.15
+</canvas>
+<script type="application/javascript">
+    function go() {
+        setTimeout("draw()", 20);
+    }
+
+    let shiftX = 10;
+    let shiftY = 10;
+    let widthBoard = 1600;
+    let heightBoard = 950;
+    let x = 10;
+
+    function draw() {
+        let canvas = document.getElementById('canvas');
+        if (canvas.getContext) {
+            let ctx = canvas.getContext('2d');
+            ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+            drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY);
+            card(ctx, x + 10, heightBoard * 0.35 + shiftY + 10, widthBoard / 8 + shiftX - 20 + x, heightBoard * 0.35 + shiftY + 100, 5, "#333");
+            x += 10;
+        }
+        if (x < widthBoard - 200) {
+            setTimeout("draw()", 20);
+        }
+    }
+
+    function drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY) {
+        let colors = {
+            "border": "#cccccc",
+            "backlog": "#b800dd",
+            "analysis": "#ce1212",
+            "development": "#1266cf",
+            "testing": "#008100",
+            "deployed": "#000000"
+        };
+        //Lanes
+        ctx.lineWidth = 3;
+        let laneWidth = widthBoard / 8;
+        let radius = 25;
+        rr(ctx, shiftX, shiftY, widthBoard + shiftX, heightBoard + shiftY, radius, colors.border);
+        rr(ctx, shiftX, heightBoard * 0.2 + shiftY, widthBoard + shiftX, heightBoard * 0.35 + shiftY, 0, colors.border);
+
+
+        ln(ctx, shiftX, shiftY + radius, shiftX, heightBoard - radius + shiftY, colors.backlog, [1, 0]);
+        ln(ctx, laneWidth + shiftX, shiftY, laneWidth + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
+        ln(ctx, laneWidth * 2 + shiftX, heightBoard * 0.15 + shiftY, laneWidth * 2 + shiftX, heightBoard + shiftY, colors.analysis, [1, 0]);
+        ln(ctx, laneWidth + shiftX, heightBoard * 0.15 + shiftY, laneWidth * 3 + shiftX, heightBoard * 0.15 + shiftY, colors.analysis, [20, 5]);
+        ln(ctx, laneWidth * 3 + shiftX, shiftY, laneWidth * 3 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
+        ln(ctx, laneWidth * 4 + shiftX, heightBoard * 0.15 + shiftY, laneWidth * 4 + shiftX, heightBoard + shiftY, colors.development, [1, 0]);
+        ln(ctx, laneWidth * 3 + shiftX, heightBoard * 0.15 + shiftY, laneWidth * 5 + shiftX, heightBoard * 0.15 + shiftY, colors.development, [20, 5]);
+        ln(ctx, laneWidth * 5 + shiftX, shiftY, laneWidth * 5 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
+        ln(ctx, laneWidth * 6 + shiftX, shiftY, laneWidth * 6 + shiftX, heightBoard + shiftY, colors.testing, [1, 0]);
+        ln(ctx, laneWidth * 7 + shiftX, shiftY, laneWidth * 7 + shiftX, heightBoard + shiftY, colors.deployed, [1, 0]);
+    }
+
+    function card(ctx, x1, y1, x2, y2, r, color) {
+        rr(ctx, x1, y1, x2, y2, r, color);
+    }
+
+    function ln(ctx, x1, y1, x2, y2, color, dashed) {
+        ctx.setLineDash(dashed);
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+
+    function rr(ctx, x1, y1, x2, y2, r, color) {
+        ctx.strokeStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(x1 + r, y1);
+        ctx.lineTo(x2 - r, y1);
+        ctx.arc(x2 - r, y1 + r, r, 1.5 * Math.PI, 0);
+        ctx.lineTo(x2, y2 - r);
+        ctx.arc(x2 - r, y2 - r, r, 0, 0.5 * Math.PI);
+        ctx.lineTo(x1 + r, y2);
+        ctx.arc(x1 + r, y2 - r, r, 0.5 * Math.PI, Math.PI);
+        ctx.lineTo(x1, y1 + r);
+        ctx.arc(x1 + r, y1 + r, r, Math.PI, 1.5 * Math.PI);
+        ctx.stroke();
+    }
+
+</script>
+</body>
+</html>

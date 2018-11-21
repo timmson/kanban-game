@@ -1,8 +1,12 @@
-package ru.timmson.kanban.game.model
+package ru.timmson.kanban.game.service
 
 import org.apache.commons.lang3.Range
 import org.springframework.stereotype.Service
 import ru.timmson.kanban.game.generator.RandomGenerator
+import ru.timmson.kanban.game.model.Card
+import ru.timmson.kanban.game.model.Column
+import ru.timmson.kanban.game.model.Dice
+import ru.timmson.kanban.game.model.Stage
 import java.util.*
 
 @Service
