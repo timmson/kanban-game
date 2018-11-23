@@ -1,6 +1,6 @@
 package ru.timmson.kanban.game.model
 
-class Stage private constructor(stage: String) {
+data class Stage constructor(var stage: String) {
 
     companion object {
         @JvmField val STAGE_BACKLOG = Stage("B")

@@ -2,7 +2,7 @@ package ru.timmson.kanban.game.model
 
 import java.util.*
 
-class Dice(val points: List<DiceSide>) {
+data class Dice(val points: List<DiceSide>) {
 
     private val random = Random()
 

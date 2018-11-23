@@ -1,6 +1,8 @@
 package ru.timmson.kanban.game.model
 
-class DiceSide(works: List<Work>) {
+import com.fasterxml.jackson.annotation.JsonIgnore
+
+data class DiceSide(@JsonIgnore var works: List<Work>) {
 
     private var points = mapOf<Stage?, Int?>()
 

@@ -1,6 +1,8 @@
 package ru.timmson.kanban.game.model
 
-class Card(id: Int, var cardType: String, var value: (Int) -> Int, works: List<Work>) {
+import com.fasterxml.jackson.annotation.JsonIgnore
+
+data class Card(@JsonIgnore val id: Int, @JsonIgnore val cardType: String, @JsonIgnore val value: (Int) -> Int, @JsonIgnore val works: List<Work>) {
 
     companion object {
         @JvmField
@@ -17,11 +19,11 @@ class Card(id: Int, var cardType: String, var value: (Int) -> Int, works: List<W
 
     }
 
-    var cardId = ""
+    val cardId: String
 
-    var estimations = mapOf<Stage?, Int?>()
+    val estimations: MutableMap<Stage?, Int?>
 
-    var remainings = mutableMapOf<Stage?, Int?>()
+    val remainings: MutableMap<Stage?, Int?>
 
     var startDay = 0
 
@@ -29,7 +31,7 @@ class Card(id: Int, var cardType: String, var value: (Int) -> Int, works: List<W
 
     init {
         cardId = cardType + id.toString().padStart(3, '0')
-        estimations = works.map { it.stage to it.points }.toMap()
+        estimations = works.map { it.stage to it.points }.toMap().toMutableMap()
         remainings = estimations.toMutableMap()
 
     }
