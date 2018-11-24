@@ -7,6 +7,7 @@
 </head>
 <body>
 <h2>Kanban game</h2>
+<input type="button" id="start-stop" name="start-stop" value="Start"/>
 <canvas id="canvas" width="1700" height="1000">
     Kanban game
 </canvas>
@@ -17,9 +18,19 @@
         $.get("http://localhost:8080/board/new?a=2&d=2&t=1", function (data) {
 
         });
-        setTimeout("draw()", 500);
+
+        draw();
     });
 
+    $("#start-stop").click(() => {
+        isPlaying = !isPlaying;
+        $("#start-stop").prop("value", isPlaying ? "Stop" : "Start");
+        if (isPlaying) {
+            draw();
+        }
+    });
+
+    let isPlaying = false;
     let shiftX = 10;
     let shiftY = 10;
     let widthBoard = 1600;
@@ -39,9 +50,9 @@
         let canvas = document.getElementById('canvas');
         if (canvas.getContext) {
             let ctx = canvas.getContext('2d');
-            ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
-            let specs = drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY);
-            $.getJSON("http://localhost:8080/board/work", function (data) {
+            $.getJSON("http://localhost:8080/board/" + (isPlaying ? "work" : "view"), function (data) {
+                ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+                let specs = drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY);
                 wipLimitLabel(ctx, specs.laneWidth * 0.40 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.backlog.limit);
                 wipLimitLabel(ctx, specs.laneWidth * 1.90 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.analysis.limit);
                 wipLimitLabel(ctx, specs.laneWidth * 3.90 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.development.limit);
@@ -60,7 +71,7 @@
                         drawCard(ctx, specs.laneWidth, specs.laneHeight, specs.standardLaneLevel, i, j, allCards[i][j])
                     }
                 }
-                if (data.columns.backlog.done.length > 0) {
+                if (data.columns.backlog.done.length > 0 && isPlaying) {
                     setTimeout("draw()", 1000);
                 }
             });
@@ -123,7 +134,7 @@
 
     function wipLimitLabel(ctx, x, y, value) {
         ctx.font = "32px Arial";
-        ctx.fillStyle =  colors.text;
+        ctx.fillStyle = colors.text;
         ctx.fillText(value, x, y);
     }
 
