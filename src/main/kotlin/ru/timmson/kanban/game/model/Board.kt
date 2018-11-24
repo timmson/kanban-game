@@ -7,7 +7,7 @@ import java.util.*
 class Board(board: BoardConfiguration) {
 
     private val tasksPerPerson = 2
-    private val backlogLength = 10
+    private val backlogLength = 100
 
     private var currentDay = 0
 
@@ -37,7 +37,7 @@ class Board(board: BoardConfiguration) {
     }
 
 
-    fun work() : BoardSnapshot {
+    fun work(): BoardSnapshot {
         currentDay++
         pairs.asReversed().forEach { it -> it.first.handle(it.second, currentDay) }
         return snapshot()
@@ -46,10 +46,10 @@ class Board(board: BoardConfiguration) {
     fun snapshot(): BoardSnapshot {
         return BoardSnapshot(
                 mapOf(
-                        Pair("backlog", ColumnSnapshot(emptyList(), emptyList(), backlogQueue)),
-                        Pair("analysis", ColumnSnapshot(analyzingPair.second, analyzingPair.first.wipQueue, analyzingPair.first.doneQueue)),
-                        Pair("development", ColumnSnapshot(developingPair.second, developingPair.first.wipQueue, developingPair.first.doneQueue)),
-                        Pair("testing", ColumnSnapshot(testingPair.second, testingPair.first.wipQueue, testingPair.first.doneQueue))
+                        Pair("backlog", ColumnSnapshot(emptyList(), backlogQueue.size, emptyList(), backlogQueue)),
+                        Pair("analysis", ColumnSnapshot(analyzingPair.second, analyzingPair.first.wipLimit, analyzingPair.first.wipQueue, analyzingPair.first.doneQueue)),
+                        Pair("development", ColumnSnapshot(developingPair.second, developingPair.first.wipLimit, developingPair.first.wipQueue, developingPair.first.doneQueue)),
+                        Pair("testing", ColumnSnapshot(testingPair.second, testingPair.first.wipLimit, testingPair.first.wipQueue, testingPair.first.doneQueue))
                 ),
                 currentDay
         )

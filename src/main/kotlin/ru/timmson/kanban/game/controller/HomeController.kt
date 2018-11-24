@@ -10,7 +10,7 @@ class HomeController {
 
     @GetMapping
     fun index(): String {
-        return "index.html"
+        return "static/index.html"
     }
 
 }

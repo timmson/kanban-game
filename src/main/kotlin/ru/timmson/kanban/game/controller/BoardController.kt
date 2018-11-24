@@ -9,8 +9,8 @@ import ru.timmson.kanban.game.model.BoardConfiguration
 import ru.timmson.kanban.game.model.BoardSnapshot
 
 @RestController
-@RequestMapping("/")
-class IndexController {
+@RequestMapping("/board")
+class BoardController {
 
     private var board: Board = Board(BoardConfiguration(1, 1, 1))
 
