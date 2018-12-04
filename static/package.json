@@ -1,0 +1,29 @@
+{
+  "name": "kanban-game",
+  "version": "1.0.0",
+  "description": "Implementation of getKanban Game",
+  "private": true,
+  "dependencies": {
+    "jquery": "3.3.1",
+    "webpack": "4.27.0",
+    "webpack-cli": "3.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timmson/kanban-game.git"
+  },
+  "keywords": [
+    "kanban",
+    "getkanban"
+  ],
+  "author": "timmson",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/timmson/kanban-game/issues"
+  },
+  "homepage": "https://github.com/timmson/kanban-game#readme"
+}
