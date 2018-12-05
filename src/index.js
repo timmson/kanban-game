@@ -1,8 +1,40 @@
 import $ from "jquery";
 import Board from "./board.js";
 
-let backlogCount = 10;
-let board = new Board(2, 2, 1, backlogCount);
+let config = {
+    backlogSize: 100,
+    stages: [
+        {
+            name: "backlog",
+            diceCount: 0,
+            limit: 100,
+            isStart : true,
+            isUnlimitedDone: false
+        },
+        {
+            name: "analysis",
+            diceCount: 3,
+            limit: 3,
+            isStart : false,
+            isUnlimitedDone: false
+        },
+        {
+            name: "development",
+            diceCount: 2,
+            limit: 2,
+            isStart : false,
+            isUnlimitedDone: false
+        },
+        {
+            name: "testing",
+            diceCount: 1,
+            limit: 1,
+            isStart : false,
+            isUnlimitedDone: true
+        }
+    ]
+};
+let board = new Board(config);
 
 $(function () {
     draw();
@@ -57,8 +89,8 @@ function draw() {
                 drawCard(ctx, specs.laneWidth, specs.laneHeight, specs.standardLaneLevel, i, j, allCards[i][j])
             }
         }
-        if (data.columns.testing.done.length < backlogCount && isPlaying) {
-            setTimeout(draw, 1000);
+        if (data.columns.testing.done.length < config.backlogSize && isPlaying) {
+            setTimeout(draw, 500);
         }
 
     }

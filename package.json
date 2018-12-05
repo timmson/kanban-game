@@ -4,11 +4,12 @@
   "description": "Implementation of getKanban Game",
   "private": true,
   "dependencies": {
-    "jquery": "3.3.1",
+    "jquery": "3.3.1"
+  },
+  "devDependencies": {
     "webpack": "4.27.0",
     "webpack-cli": "3.1.2"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

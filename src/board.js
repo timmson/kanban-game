@@ -1,55 +1,89 @@
 module.exports = Board;
 
-let backlogSize = 10;
+let config = {
+    backlogSize: 100,
+    stages: [
+        {
+            name: "backlog",
+            diceCount: 0,
+            limit: 100,
+            isStart : true,
+            isUnlimitedDone: false
+        },
+        {
+            name: "analysis",
+            diceCount: 3,
+            limit: 3,
+            isStart : false,
+            isUnlimitedDone: false
+        },
+        {
+            name: "development",
+            diceCount: 2,
+            limit: 2,
+            isStart : false,
+            isUnlimitedDone: false
+        },
+        {
+            name: "testing",
+            diceCount: 1,
+            limit: 1,
+            isStart : false,
+            isUnlimitedDone: true
+        }
+    ]
+};
 
-let stages = ["analysis", "development", "testing"];
+let board = {
+    columns: {},
+    currentDay: 0
+};
 
-function Board(a, d, t, cnt) {
-    this.board = initBoard(
-        (a !== undefined ? a : 1),
-        (d !== undefined ? d : 1),
-        (t !== undefined ? t : 1)
-    );
-    backlogSize = cnt;
+function Board(_config) {
+    if (_config !== undefined) {
+        config = _config;
+    }
+
+    config.stages.forEach((stage, i) => {
+        board.columns[stage.name] = {
+            "index": i,
+            "isUnlimitedDone": stage.isUnlimitedDone,
+            "limit": stage.limit,
+            "dices": stage.isStart ? [] : generateDices(stage.diceCount, stage.name),
+            "wip": [],
+            "done": stage.isStart ? generateCards() : []
+        }
+    });
 }
 
 Board.prototype.view = function () {
-    console.log(this.board);
-    return this.board;
+    return board;
 };
 
 Board.prototype.turn = function () {
-    this.board.currentDay++;
+    board.currentDay++;
 
-    stages.reverse().forEach(stage => {
+    getWorkStages().reverse().forEach(stage => {
         let card = {};
-        while (this.board.columns[stage].wip.length + this.board.columns[stage].done.length < this.board.columns[stage].limit && card !== undefined) {
-            switch (stage) {
-                case "analysis":
-                    card = this.board.columns.backlog.done.shift();
-                    break;
-                case "development":
-                    card = this.board.columns.analysis.done.shift();
-                    break;
-                case "testing":
-                    card = this.board.columns.development.done.shift();
-                    break;
-            }
+        let column = board.columns[stage];
+        let index = column.index - 1;
+        while (column.wip.length + (column.isUnlimitedDone ? 0 : column.done.length) < column.limit && card !== undefined) {
+            card = Object.values(board.columns).filter(c => c.index === index)[0].done.shift();
             if (card !== undefined) {
-                this.board.columns[stage].wip.push(card);
+                column.wip.push(card);
             }
         }
 
-        let work = getWork(this.board.columns[stage].workers, stage);
+        let score = getScore(stage);
 
-        while (work > 0 && this.board.columns[stage].wip.length > 0) {
-            if (work < this.board.columns[stage].wip[0].remainings[stage]) {
-                this.board.columns[stage].wip[0].remainings[stage] -= work;
-                work = 0;
+        while (score > 0 && board.columns[stage].wip.length > 0) {
+            if (score < board.columns[stage].wip[0].remainings[stage]) {
+                board.columns[stage].wip[0].remainings[stage] -= score;
+                score = 0;
             } else {
-                work -= this.board.columns[stage].wip[0].remainings[stage];
-                this.board.columns[stage].wip[0].remainings[stage] = 0;
-                this.board.columns[stage].done.push(this.board.columns[stage].wip.shift());
+                score -= board.columns[stage].wip[0].remainings[stage];
+                board.columns[stage].wip[0].remainings[stage] = 0;
+                board.columns[stage].done.push(board.columns[stage].wip.shift());
             }
         }
     });
@@ -57,51 +91,23 @@ Board.prototype.turn = function () {
 };
 
 
-function initBoard(a, d, t) {
-    return {
-        "columns": {
-            "backlog": {
-                "workers": [],
-                "limit": backlogSize,
-                "wip": [],
-                "done": generateCards(backlogSize)
-            },
-            "analysis": {
-                "workers": generateDices(a, "analysis"),
-                "limit": 2 * a,
-                "wip": [],
-                "done": []
-            },
-            "development": {
-                "workers": generateDices(a, "development"),
-                "limit": 2 * d,
-                "wip": [],
-                "done": []
-            },
-            "testing": {
-                "workers": generateDices(a, "testing"),
-                "limit": 2 * t,
-                "wip": [],
-                "done": []
-            },
-        },
-        currentDay: 0
-    };
+function getScore(type) {
+    let count = 0;
+    board.columns[type].dices.forEach(dice => {
+        count += dice[getRandomInt(0, 5)][type];
+    });
+    return count;
 }
 
-function getWork(workers, type) {
-    let count = 0;
-    for (let i = 0; i < workers.length; i++) {
-        count += workers[i][getRandomInt(0, 5)][type];
-    }
-    return count;
+function getWorkStages() {
+    return config.stages.filter(stage => stage.diceCount > 0).map(stage => stage.name);
 }
 
 function generateDices(count, type) {
     let dice = [];
     for (let i = 0; i < 6; i++) {
         let diceSide = {};
-        stages.forEach(stage =>
+        getWorkStages().forEach(stage =>
             diceSide[stage] = generateDiceSide(stage, type)
         );
         dice.push(diceSide);
@@ -114,15 +120,15 @@ function generateDices(count, type) {
     return dices;
 }
 
-function generateDiceSide(work, type) {
-    return (work === type) ? getRandomInt(3, 6) : getRandomInt(1, 3)
+function generateDiceSide(stage, type) {
+    return (stage === type) ? getRandomInt(3, 6) : getRandomInt(1, 3)
 }
 
-function generateCards(count) {
+function generateCards() {
     let cards = [];
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < config.backlogSize; i++) {
         let estimations = {};
-        stages.forEach(stage =>
+        getWorkStages().forEach(stage =>
             estimations[stage] = (stage === "testing" ? getRandomInt(5, 20) : getRandomInt(1, 10))
         );
         let remainings = {};
