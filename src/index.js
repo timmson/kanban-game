@@ -8,28 +8,28 @@ let config = {
             name: "backlog",
             diceCount: 0,
             limit: 100,
-            isStart : true,
+            isStart: true,
             isUnlimitedDone: false
         },
         {
             name: "analysis",
-            diceCount: 3,
-            limit: 3,
-            isStart : false,
+            diceCount: 2,
+            limit: 2,
+            isStart: false,
             isUnlimitedDone: false
         },
         {
             name: "development",
-            diceCount: 2,
-            limit: 2,
-            isStart : false,
+            diceCount: 1,
+            limit: 4,
+            isStart: false,
             isUnlimitedDone: false
         },
         {
             name: "testing",
-            diceCount: 1,
-            limit: 1,
-            isStart : false,
+            diceCount: 2,
+            limit: 3,
+            isStart: false,
             isUnlimitedDone: true
         }
     ]

@@ -76,14 +76,14 @@ Board.prototype.turn = function () {
 
         let score = getScore(stage);
 
-        while (score > 0 && board.columns[stage].wip.length > 0) {
-            if (score < board.columns[stage].wip[0].remainings[stage]) {
-                board.columns[stage].wip[0].remainings[stage] -= score;
+        while (score > 0 && column.wip.length > 0) {
+            if (score < column.wip[0].remainings[stage]) {
+                column.wip[0].remainings[stage] -= score;
                 score = 0;
             } else {
-                score -= board.columns[stage].wip[0].remainings[stage];
-                board.columns[stage].wip[0].remainings[stage] = 0;
-                board.columns[stage].done.push(board.columns[stage].wip.shift());
+                score -= column.wip[0].remainings[stage];
+                column.wip[0].remainings[stage] = 0;
+                column.done.push(column.wip.shift());
             }
         }
     });
@@ -131,12 +131,10 @@ function generateCards() {
         getWorkStages().forEach(stage =>
             estimations[stage] = (stage === "testing" ? getRandomInt(5, 20) : getRandomInt(1, 10))
         );
-        let remainings = {};
-        Object.assign(estimations, remainings);
         cards.push({
             "cardId": "S" + (i + 1).toString().padStart(3, "0"),
             "estimations": estimations,
-            "remainings": remainings,
+            "remainings": Object.assign({}, estimations),
             "startDay": 0,
             "endDay": 0,
             "cycleTime": 0
