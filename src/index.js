@@ -70,11 +70,7 @@ function draw() {
         let ctx = canvas.getContext('2d');
         let data = isPlaying ? board.turn() : board.view();
         ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
-        let specs = drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY);
-        wipLimitLabel(ctx, specs.laneWidth * 0.40 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.backlog.limit);
-        wipLimitLabel(ctx, specs.laneWidth * 1.90 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.analysis.limit);
-        wipLimitLabel(ctx, specs.laneWidth * 3.90 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.development.limit);
-        wipLimitLabel(ctx, specs.laneWidth * 5.45 + shiftX, specs.wipLabelLevel + specs.wipLabelHeight, data.columns.testing.limit);
+        let specs = drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY, config);
         let allCards = [
             data.columns.backlog.done.slice(0, 6),
             data.columns.analysis.wip,
@@ -100,14 +96,19 @@ function drawBoard(ctx, widthBoard, heightBoard) {
     let spec = {
         "laneWidth": widthBoard / 8,
         "laneHeight": heightBoard * 0.1,
-        "wipLabelLevel": heightBoard * 0.05,
+        "columnLabelLevel": heightBoard * 0.03,
+        "columnMinorLabelLevel": heightBoard * 0.06,
+        "wipLabelLevel": heightBoard * 0.075,
         "wipLabelHeight": heightBoard * 0.05,
+        "dashedLevel": heightBoard * 0.15,
+        "dashedLabelLevel": heightBoard * 0.18,
         "expediteLaneLevel": heightBoard * 0.2,
         "standardLaneLevel": heightBoard * 0.3,
     };
     //Lanes
     ctx.lineWidth = 3;
     let radius = 25;
+
     rr(ctx, shiftX, shiftY, widthBoard + shiftX, heightBoard + shiftY, radius, colors.border, [1, 0]);
     rr(ctx, shiftX, spec.expediteLaneLevel + shiftY, widthBoard + shiftX, spec.standardLaneLevel + shiftY, 0, colors.border, [1, 0]);
 
@@ -117,14 +118,14 @@ function drawBoard(ctx, widthBoard, heightBoard) {
 
     ln(ctx, spec.laneWidth + shiftX, shiftY, spec.laneWidth + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
 
-    ln(ctx, spec.laneWidth * 2 + shiftX, heightBoard * 0.15 + shiftY, spec.laneWidth * 2 + shiftX, heightBoard + shiftY, colors.analysis, [1, 0]);
-    ln(ctx, spec.laneWidth + shiftX, heightBoard * 0.15 + shiftY, spec.laneWidth * 3 + shiftX, heightBoard * 0.15 + shiftY, colors.analysis, [20, 5]);
+    ln(ctx, spec.laneWidth * 2 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 2 + shiftX, heightBoard + shiftY, colors.analysis, [1, 0]);
+    ln(ctx, spec.laneWidth + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 3 + shiftX, spec.dashedLevel + shiftY, colors.analysis, [20, 5]);
     rr(ctx, spec.laneWidth * 1.75 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 2.25 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.analysis, [1, 0]);
 
     ln(ctx, spec.laneWidth * 3 + shiftX, shiftY, spec.laneWidth * 3 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
 
-    ln(ctx, spec.laneWidth * 4 + shiftX, heightBoard * 0.15 + shiftY, spec.laneWidth * 4 + shiftX, heightBoard + shiftY, colors.development, [1, 0]);
-    ln(ctx, spec.laneWidth * 3 + shiftX, heightBoard * 0.15 + shiftY, spec.laneWidth * 5 + shiftX, heightBoard * 0.15 + shiftY, colors.development, [20, 5]);
+    ln(ctx, spec.laneWidth * 4 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 4 + shiftX, heightBoard + shiftY, colors.development, [1, 0]);
+    ln(ctx, spec.laneWidth * 3 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 5 + shiftX, spec.dashedLevel + shiftY, colors.development, [20, 5]);
     rr(ctx, spec.laneWidth * 3.75 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 4.25 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.development, [1, 0]);
 
     ln(ctx, spec.laneWidth * 5 + shiftX, shiftY, spec.laneWidth * 5 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
@@ -133,6 +134,32 @@ function drawBoard(ctx, widthBoard, heightBoard) {
     rr(ctx, spec.laneWidth * 5.25 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 5.75 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.testing, [1, 0]);
 
     ln(ctx, spec.laneWidth * 7 + shiftX, shiftY, spec.laneWidth * 7 + shiftX, heightBoard + shiftY, colors.deployed, [1, 0]);
+
+
+    //Labels
+    columnLabel(ctx, spec.laneWidth * 0.25 + shiftX, shiftY + spec.columnLabelLevel, colors.backlog, "Backlog");
+    minorLabel(ctx, spec.laneWidth * 0.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.backlog, "WIP Limit");
+    columnLabel(ctx, spec.laneWidth * 1.75 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis");
+    minorLabel(ctx, spec.laneWidth * 1.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.analysis, "WIP Limit");
+    columnLabel(ctx, spec.laneWidth * 3.60 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development");
+    minorLabel(ctx, spec.laneWidth * 3.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.development, "WIP Limit");
+    columnLabel(ctx, spec.laneWidth * 5.25 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing");
+    minorLabel(ctx, spec.laneWidth * 5.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.testing, "WIP Limit");
+    columnLabel(ctx, spec.laneWidth * 6.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Ready");
+    columnLabel(ctx, spec.laneWidth * 7.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Deployed");
+
+    //Minor labels
+    minorLabel(ctx, spec.laneWidth * 1.25 + shiftX, spec.dashedLabelLevel + shiftY, colors.analysis, "In Progress");
+    minorLabel(ctx, spec.laneWidth * 2.40 + shiftX, spec.dashedLabelLevel + shiftY, colors.analysis, "Done");
+    minorLabel(ctx, spec.laneWidth * 3.25 + shiftX, spec.dashedLabelLevel + shiftY, colors.development, "In Progress");
+    minorLabel(ctx, spec.laneWidth * 4.40 + shiftX, spec.dashedLabelLevel + shiftY, colors.development, "Done");
+
+
+    //Limits
+    wipLimitLabel(ctx, spec.laneWidth * 0.40 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 1.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[1].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 3.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[2].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[3].limit);
 
     return spec;
 }
@@ -150,9 +177,21 @@ function drawCard(ctx, laneWidth, laneHeight, laneLevel, i, j, card) {
     ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 69, 2.5, colors.testing, card.estimations.testing - card.remainings.testing, card.estimations.testing);
 }
 
+function minorLabel(ctx, x, y, color, value) {
+    return drawLabel(ctx, x, y, "18px Arial", color, value);
+}
+
+function columnLabel(ctx, x, y, color, value) {
+    return drawLabel(ctx, x, y, "28px Arial", color, value);
+}
+
 function wipLimitLabel(ctx, x, y, value) {
-    ctx.font = "32px Arial";
-    ctx.fillStyle = colors.text;
+    return drawLabel(ctx, x, y, "32px Arial", colors.text, value);
+}
+
+function drawLabel(ctx, x, y, font, color, value) {
+    ctx.font = font;
+    ctx.fillStyle = color;
     ctx.fillText(value, x, y);
 }
 
