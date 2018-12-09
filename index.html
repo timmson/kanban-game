@@ -3,11 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <title>Kanban game</title>
+    <style>
+        .singleCell {
+            display: table-cell;
+            text-align: center;
+            width: 209px;
+        }
+
+        .doubleCell {
+            display: table-cell;
+            text-align: center;
+            width: 398px;
+        }
+
+        .input_data {
+            width: 50px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-<input type="button" id="start-stop" name="start-stop" value="Start"/>
-<canvas id="canvas" width="1700" height="1000">
-    Kanban game
+<div style="display: table">
+    <div style="display: table-row">
+        <div class="singleCell">
+            <input type="button" id="start-stop" name="start-stop" value="Start 🏁"/>
+        </div>
+        <div class="doubleCell">
+            <label for="analysisDices">🎲&nbsp;</label>
+            <input type="text" id="analysisDices" name="analysisDices" class="input_data"/>
+            /
+            <label for="analysisLimit">⚠&nbsp;</label>
+            <input type="text" id="analysisLimit" name="analysisLimit" class="input_data"/>
+        </div>
+        <div class="doubleCell">
+            <label for="developmentDices">🎲&nbsp;</label>
+            <input type="text" id="developmentDices" name="developmentDices" class="input_data"/>
+            /
+            <label for="developmentLimit">⚠&nbsp;</label>
+            <input type="text" id="developmentLimit" name="developmentLimit" class="input_data"/>
+        </div>
+        <div class="singleCell">
+            <label for="testingDices">🎲&nbsp;</label>
+            <input type="text" id="testingDices" name="testingDices" class="input_data"/>
+            /
+            <label for="testingLimit">⚠&nbsp;</label>
+            <input type="text" id="testingLimit" name="testingLimit" class="input_data"/>
+        </div>
+        <div style="display: table-cell">
+            &nbsp;
+        </div>
+        <div style="display: table-cell">
+            &nbsp;
+        </div>
+    </div>
+</div>
+<canvas id="board" width="1700" height="1000">
+    Sorry, i haven't ability to run with game. Check "JS Canvas" support by your browser
+</canvas>
+<canvas id="metrics" width="1700" height="1000">
+
 </canvas>
 <script type="application/javascript" src="main.js"></script>
 </body>

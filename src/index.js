@@ -36,14 +36,30 @@ let config = {
 };
 let board = new Board(config);
 
+let tracing = [];
+
 $(function () {
+    config.stages.filter(stage => stage.diceCount >= 0 && stage.limit !== undefined).forEach(stage => {
+        console.log(stage);
+        $("#" + stage.name + "Dices").val(stage.diceCount);
+        $("#" + stage.name + "Limit").val(stage.limit);
+    });
     draw();
 });
 
 $("#start-stop").click(() => {
     isPlaying = !isPlaying;
-    $("#start-stop").prop("value", isPlaying ? "Stop" : "Start");
+    $("#start-stop").prop("value", isPlaying ? "Stop 🏁" : "Start 🏁");
     if (isPlaying) {
+        config.stages.filter(stage => stage.diceCount >= 0 && stage.limit !== undefined).forEach(stage => {
+            stage.diceCount = $("#" + stage.name + "Dices").val();
+            stage.limit = $("#" + stage.name + "Limit").val();
+        });
+        /**
+         * TODO Fix refresh
+         * @type {Board}
+         */
+        board = new Board(config);
         draw();
     }
 });
@@ -65,26 +81,13 @@ let colors = {
 };
 
 function draw() {
-    let canvas = document.getElementById('canvas');
-    if (canvas.getContext) {
-        let ctx = canvas.getContext('2d');
+    let boardCanvas = document.getElementById("board");
+    let cfdCanvas = document.getElementById("metrics");
+    if (boardCanvas.getContext) {
         let data = isPlaying ? board.turn() : board.view();
-        ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
-        let specs = drawBoard(ctx, widthBoard, heightBoard, shiftX, shiftY, config);
-        let allCards = [
-            data.columns.backlog.done.slice(0, 6),
-            data.columns.analysis.wip,
-            data.columns.analysis.done,
-            data.columns.development.wip,
-            data.columns.development.done,
-            data.columns.testing.wip,
-            data.columns.testing.done.slice(0, 6),
-        ];
-        for (let i = 0; i < allCards.length; i++) {
-            for (let j = 0; j < allCards[i].length; j++) {
-                drawCard(ctx, specs.laneWidth, specs.laneHeight, specs.standardLaneLevel, i, j, allCards[i][j])
-            }
-        }
+        drawBoard(boardCanvas.getContext("2d"), data);
+        drawCFD(cfdCanvas.getContext("2d"), data);
+
         if (data.columns.testing.done.length < config.backlogSize && isPlaying) {
             setTimeout(draw, 500);
         }
@@ -92,7 +95,9 @@ function draw() {
     }
 }
 
-function drawBoard(ctx, widthBoard, heightBoard) {
+function drawBoard(ctx, data) {
+    ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+
     let spec = {
         "laneWidth": widthBoard / 8,
         "laneHeight": heightBoard * 0.1,
@@ -161,7 +166,20 @@ function drawBoard(ctx, widthBoard, heightBoard) {
     wipLimitLabel(ctx, spec.laneWidth * 3.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[2].limit);
     wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[3].limit);
 
-    return spec;
+    let allCards = [
+        data.columns.backlog.done.slice(0, 6),
+        data.columns.analysis.wip,
+        data.columns.analysis.done,
+        data.columns.development.wip,
+        data.columns.development.done,
+        data.columns.testing.wip,
+        data.columns.testing.done.slice(0, 6),
+    ];
+    for (let i = 0; i < allCards.length; i++) {
+        for (let j = 0; j < allCards[i].length; j++) {
+            drawCard(ctx, spec.laneWidth, spec.laneHeight, spec.standardLaneLevel, i, j, allCards[i][j])
+        }
+    }
 }
 
 function drawCard(ctx, laneWidth, laneHeight, laneLevel, i, j, card) {
@@ -193,6 +211,35 @@ function drawLabel(ctx, x, y, font, color, value) {
     ctx.font = font;
     ctx.fillStyle = color;
     ctx.fillText(value, x, y);
+}
+
+function drawCFD(ctx, data) {
+    ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+    ctx.lineWidth = 1;
+    rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
+    let spec = {
+        cellWidth: Math.floor(widthBoard / 100)
+    };
+
+    for (let i = 1; i < 100; i++) {
+        ln(ctx, shiftX + spec.cellWidth * i, shiftY, shiftX + spec.cellWidth * i, shiftY + heightBoard, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
+        if (i < Math.floor(heightBoard / spec.cellWidth)) {
+            ln(ctx, shiftX, shiftY + spec.cellWidth * i, shiftX + widthBoard, shiftY + spec.cellWidth * i, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
+        }
+    }
+
+    tracing.push({
+        "analysis": 100 - data.columns.backlog.done.length
+    });
+
+    tracing.map(day => day.analysis).forEach((count, i) => {
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(shiftX + spec.cellWidth * count, heightBoard - shiftY - i * spec.cellWidth, 5, 0, 2 * Math.PI);
+        ctx.strokeStyle = colors.analysis;
+        ctx.stroke();
+    });
+
 }
 
 function ca(ctx, x, y, r, color, done, all) {
