@@ -39,8 +39,7 @@ let board = new Board(config);
 let tracing = [];
 
 $(function () {
-    config.stages.filter(stage => stage.diceCount >= 0 && stage.limit !== undefined).forEach(stage => {
-        console.log(stage);
+    config.stages.filter(stage => stage.diceCount > 0 && stage.limit !== undefined).forEach(stage => {
         $("#" + stage.name + "Dices").val(stage.diceCount);
         $("#" + stage.name + "Limit").val(stage.limit);
     });
@@ -51,7 +50,7 @@ $("#start-stop").click(() => {
     isPlaying = !isPlaying;
     $("#start-stop").prop("value", isPlaying ? "Stop 🏁" : "Start 🏁");
     if (isPlaying) {
-        config.stages.filter(stage => stage.diceCount >= 0 && stage.limit !== undefined).forEach(stage => {
+        config.stages.filter(stage => stage.diceCount > 0 && stage.limit !== undefined).forEach(stage => {
             stage.diceCount = $("#" + stage.name + "Dices").val();
             stage.limit = $("#" + stage.name + "Limit").val();
         });
@@ -60,6 +59,7 @@ $("#start-stop").click(() => {
          * @type {Board}
          */
         board = new Board(config);
+        tracing = [];
         draw();
     }
 });
@@ -229,17 +229,40 @@ function drawCFD(ctx, data) {
     }
 
     tracing.push({
-        "analysis": 100 - data.columns.backlog.done.length
+        "analysis": config.backlogSize - data.columns.backlog.done.length - data.columns.analysis.wip.length,
+        "development": config.backlogSize - data.columns.backlog.done.length
+            - data.columns.analysis.wip.length - data.columns.analysis.done.length
+            - data.columns.development.wip.length,
+        "testing": config.backlogSize - data.columns.backlog.done.length
+            - data.columns.analysis.wip.length - data.columns.analysis.done.length
+            - data.columns.development.wip.length - data.columns.development.done.length
+            - data.columns.testing.wip.length,
     });
 
-    tracing.map(day => day.analysis).forEach((count, i) => {
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(shiftX + spec.cellWidth * count, heightBoard - shiftY - i * spec.cellWidth, 5, 0, 2 * Math.PI);
-        ctx.strokeStyle = colors.analysis;
-        ctx.stroke();
+    let lastPoint = {};
+    tracing.forEach((count, i) => {
+        Object.keys(count).forEach(key => {
+            if (lastPoint[key] === undefined) {
+                lastPoint[key] = {
+                    x: shiftX,
+                    y: heightBoard - shiftY
+                };
+            }
+            ctx.lineWidth = 3;
+            let point = {
+                x: shiftX + i * spec.cellWidth,
+                y: heightBoard - shiftY - spec.cellWidth * count[key]
+            };
+            ln(ctx, lastPoint[key].x, lastPoint[key].y, point.x, point.y, colors[key], [1, 0]);
+            lastPoint[key] = point;
+            ctx.beginPath();
+            ctx.arc(lastPoint[key].x, lastPoint[key].y, 3, 0, 2 * Math.PI);
+            ctx.strokeStyle = colors[key];
+            ctx.stroke();
+            ctx.fillStyle = colors[key];
+            ctx.fill();
+        });
     });
-
 }
 
 function ca(ctx, x, y, r, color, done, all) {
