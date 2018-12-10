@@ -2,36 +2,38 @@ import $ from "jquery";
 import Board from "./board.js";
 
 let config = {
-    backlogSize: 100,
     stages: [
         {
-            name: "backlog",
-            diceCount: 0,
-            limit: 100,
-            isStart: true,
-            isUnlimitedDone: false
+            name: "ready",
+            limit: 4,
+            isInnerDone: false
         },
         {
             name: "analysis",
             diceCount: 2,
             limit: 2,
-            isStart: false,
-            isUnlimitedDone: false
+            isInnerDone: true
         },
         {
             name: "development",
             diceCount: 1,
             limit: 4,
-            isStart: false,
-            isUnlimitedDone: false
+            isInnerDone: true
         },
         {
             name: "testing",
             diceCount: 2,
             limit: 3,
-            isStart: false,
-            isUnlimitedDone: true
-        }
+            isInnerDone: false
+        },
+        {
+            name: "done",
+            isInnerDone: false
+        },
+        {
+            name: "deployed",
+            isInnerDone: false
+        },
     ]
 };
 let board = new Board(config);
@@ -39,9 +41,11 @@ let board = new Board(config);
 let tracing = [];
 
 $(function () {
-    config.stages.filter(stage => stage.diceCount > 0 && stage.limit !== undefined).forEach(stage => {
-        $("#" + stage.name + "Dices").val(stage.diceCount);
+    config.stages.filter(stage => stage.limit !== undefined).forEach(stage => {
         $("#" + stage.name + "Limit").val(stage.limit);
+        if (stage.diceCount !== undefined) {
+            $("#" + stage.name + "Dices").val(stage.diceCount);
+        }
     });
     draw();
 });
@@ -50,9 +54,13 @@ $("#start-stop").click(() => {
     isPlaying = !isPlaying;
     $("#start-stop").prop("value", isPlaying ? "Stop 🏁" : "Start 🏁");
     if (isPlaying) {
-        config.stages.filter(stage => stage.diceCount > 0 && stage.limit !== undefined).forEach(stage => {
-            stage.diceCount = $("#" + stage.name + "Dices").val();
+        config.stages.filter(stage => stage.limit !== undefined).forEach(stage => {
             stage.limit = $("#" + stage.name + "Limit").val();
+            if (stage.diceCount !== undefined) {
+                stage.diceCount = $("#" + stage.name + "Dices").val();
+            }
+
+
         });
         /**
          * TODO Fix refresh
@@ -73,7 +81,7 @@ let colors = {
     "text": "#000",
     "border": "#cccccc",
     "cardBorder": "#333333",
-    "backlog": "#b800dd",
+    "ready": "#b800dd",
     "analysis": "#ce1212",
     "development": "#1266cf",
     "testing": "#008100",
@@ -88,7 +96,7 @@ function draw() {
         drawBoard(boardCanvas.getContext("2d"), data);
         drawCFD(cfdCanvas.getContext("2d"), data);
 
-        if (data.columns.testing.done.length < config.backlogSize && isPlaying) {
+        if (isPlaying) {
             setTimeout(draw, 500);
         }
 
@@ -118,8 +126,8 @@ function drawBoard(ctx, data) {
     rr(ctx, shiftX, spec.expediteLaneLevel + shiftY, widthBoard + shiftX, spec.standardLaneLevel + shiftY, 0, colors.border, [1, 0]);
 
 
-    ln(ctx, shiftX, shiftY + radius, shiftX, heightBoard - radius + shiftY, colors.backlog, [1, 0]);
-    rr(ctx, spec.laneWidth * 0.25 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 0.75 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.backlog, [1, 0]);
+    ln(ctx, shiftX, shiftY + radius, shiftX, heightBoard - radius + shiftY, colors.ready, [1, 0]);
+    rr(ctx, spec.laneWidth * 0.25 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 0.75 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.ready, [1, 0]);
 
     ln(ctx, spec.laneWidth + shiftX, shiftY, spec.laneWidth + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
 
@@ -142,15 +150,15 @@ function drawBoard(ctx, data) {
 
 
     //Labels
-    columnLabel(ctx, spec.laneWidth * 0.25 + shiftX, shiftY + spec.columnLabelLevel, colors.backlog, "Backlog");
-    minorLabel(ctx, spec.laneWidth * 0.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.backlog, "WIP Limit");
+    columnLabel(ctx, spec.laneWidth * 0.25 + shiftX, shiftY + spec.columnLabelLevel, colors.ready, "Ready");
+    minorLabel(ctx, spec.laneWidth * 0.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.ready, "WIP Limit");
     columnLabel(ctx, spec.laneWidth * 1.75 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis");
     minorLabel(ctx, spec.laneWidth * 1.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.analysis, "WIP Limit");
     columnLabel(ctx, spec.laneWidth * 3.60 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development");
     minorLabel(ctx, spec.laneWidth * 3.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.development, "WIP Limit");
     columnLabel(ctx, spec.laneWidth * 5.25 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing");
     minorLabel(ctx, spec.laneWidth * 5.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.testing, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 6.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Ready");
+    columnLabel(ctx, spec.laneWidth * 6.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Done");
     columnLabel(ctx, spec.laneWidth * 7.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Deployed");
 
     //Minor labels
@@ -161,19 +169,20 @@ function drawBoard(ctx, data) {
 
 
     //Limits
-    wipLimitLabel(ctx, spec.laneWidth * 0.40 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 1.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[1].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 3.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[2].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages[3].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 0.40 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "ready")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 1.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "analysis")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 3.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "development")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "testing")[0].limit);
 
     let allCards = [
-        data.columns.backlog.done.slice(0, 6),
+        data.columns.ready.wip,
         data.columns.analysis.wip,
         data.columns.analysis.done,
         data.columns.development.wip,
         data.columns.development.done,
         data.columns.testing.wip,
-        data.columns.testing.done.slice(0, 6),
+        data.columns.done.wip,
+        data.columns.deployed.wip.slice(0, 6),
     ];
     for (let i = 0; i < allCards.length; i++) {
         for (let j = 0; j < allCards[i].length; j++) {
@@ -228,16 +237,17 @@ function drawCFD(ctx, data) {
         }
     }
 
-    tracing.push({
-        "analysis": config.backlogSize - data.columns.backlog.done.length - data.columns.analysis.wip.length,
-        "development": config.backlogSize - data.columns.backlog.done.length
-            - data.columns.analysis.wip.length - data.columns.analysis.done.length
-            - data.columns.development.wip.length,
-        "testing": config.backlogSize - data.columns.backlog.done.length
-            - data.columns.analysis.wip.length - data.columns.analysis.done.length
-            - data.columns.development.wip.length - data.columns.development.done.length
-            - data.columns.testing.wip.length,
-    });
+
+
+    let currentTracing = {
+        "deployed" : data.columns.deployed.wip.length
+    };
+    currentTracing.testing = currentTracing.deployed + data.columns.done.wip.length;
+    currentTracing.development = currentTracing.testing + data.columns.development.done.length;
+    currentTracing.analysis = currentTracing.development + data.columns.analysis.done.length;
+    currentTracing.ready = currentTracing.analysis + data.columns.ready.wip.length;
+
+    tracing.push(currentTracing);
 
     let lastPoint = {};
     tracing.forEach((count, i) => {
