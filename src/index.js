@@ -59,8 +59,6 @@ $("#start-stop").click(() => {
             if (stage.diceCount !== undefined) {
                 stage.diceCount = $("#" + stage.name + "Dices").val();
             }
-
-
         });
         /**
          * TODO Fix refresh
@@ -227,7 +225,7 @@ function drawCFD(ctx, data) {
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
     let spec = {
-        cellWidth: Math.floor(widthBoard / 100)
+        cellWidth: Math.floor(widthBoard / 50)
     };
 
     for (let i = 1; i < 100; i++) {

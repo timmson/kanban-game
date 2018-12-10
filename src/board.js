@@ -51,15 +51,15 @@ Board.prototype.turn = function () {
         let card = {};
         let column = board.columns[stage];
         while ((column.limit !== undefined ? (column.wip.length + (column.done !== undefined ? column.done.length : 0) < column.limit) : true) && card !== undefined) {
-            /*if (board.currentDay % 10 !== 0 && stage === "deployed") {
+            if (board.currentDay % 5 !== 0 && stage === "deployed") {
                 card = undefined
-            } else {*/
+            } else {
                 let previousColumn = Object.values(board.columns).filter(c => c.index === column.index - 1)[0];
                 card = previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : generateCard();
                 if (card !== undefined) {
                     column.wip.push(card);
                 }
-            //}
+            }
         }
 
         if (column.dices !== undefined) {
@@ -74,6 +74,8 @@ Board.prototype.turn = function () {
                     column.wip[0].remainings[stage] = 0;
                     if (column.done !== undefined) {
                         column.done.push(column.wip.shift());
+                    } else {
+                        Object.values(board.columns).filter(c => c.index === column.index + 1)[0].wip.push(column.wip.shift());
                     }
                 }
             }
