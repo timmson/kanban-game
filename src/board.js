@@ -29,6 +29,9 @@ function Board(_config) {
         if (stage.isInnerDone) {
             column.done = [];
         }
+        if (stage.delay !== undefined) {
+            column.delay = stage.delay;
+        }
 
         if (i === 0) {
             while (column.wip.length < column.limit) {
@@ -48,18 +51,13 @@ Board.prototype.turn = function () {
     board.currentDay++;
 
     config.stages.map(stage => stage.name).reverse().forEach(stage => {
-        let card = {};
         let column = board.columns[stage];
-        while ((column.limit !== undefined ? (column.wip.length + (column.done !== undefined ? column.done.length : 0) < column.limit) : true) && card !== undefined) {
-            if (board.currentDay % 5 !== 0 && stage === "deployed") {
-                card = undefined
-            } else {
-                let previousColumn = Object.values(board.columns).filter(c => c.index === column.index - 1)[0];
-                card = previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : generateCard();
-                if (card !== undefined) {
-                    column.wip.push(card);
-                }
-            }
+        move(column);
+
+        if (stage === "deployed") {
+            board.columns[stage].wip.filter(card => card.endDay === 0).forEach(card => {
+                card.endDay = board.currentDay;
+            });
         }
 
         if (column.dices !== undefined) {
@@ -84,6 +82,20 @@ Board.prototype.turn = function () {
     return this.view();
 };
 
+function move(column) {
+    let card = {};
+    while ((column.limit !== undefined ? (column.wip.length + (column.done !== undefined ? column.done.length : 0) < column.limit) : true) && card !== undefined) {
+        let previousColumn = Object.values(board.columns).filter(c => c.index === column.index - 1)[0];
+        if ((column.delay !== undefined && column.delay >= 2 && board.currentDay % column.delay !== 0) || (previousColumn !== undefined && previousColumn.done === undefined && previousColumn.dices !== undefined)) {
+            card = undefined;
+        } else {
+            card = (previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : generateCard());
+            if (card !== undefined) {
+                column.wip.push(card);
+            }
+        }
+    }
+}
 
 function getScore(type) {
     let count = 0;
@@ -115,20 +127,20 @@ function generateDices(count, type) {
 }
 
 function generateDiceSide(stage, type) {
-    return (stage === type) ? getRandomInt(3, 6) : getRandomInt(1, 3)
+    return (stage === type) ? getRandomInt(1, 4) : getRandomInt(0, 2)
 }
 
 function generateCard() {
     let estimations = {};
     getWorkStages().forEach(stage =>
-        estimations[stage] = (stage === "testing" ? getRandomInt(5, 20) : getRandomInt(1, 10))
+        estimations[stage] = (stage === "testing" ? getRandomInt(5, 15) : getRandomInt(2, 10))
     );
     board.currentCardNumber++;
     return {
         "cardId": "S" + board.currentCardNumber.toString().padStart(3, "0"),
         "estimations": estimations,
         "remainings": Object.assign({}, estimations),
-        "startDay": 0,
+        "startDay": board.currentDay,
         "endDay": 0,
         "cycleTime": 0
     };

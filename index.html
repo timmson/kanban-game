@@ -50,18 +50,22 @@
             <label for="testingLimit">⚠&nbsp;</label>
             <input type="text" id="testingLimit" name="testingLimit" class="input_data"/>
         </div>
-        <div style="display: table-cell">
-            <input type="button" id="start-stop" name="start-stop" value="Start 🏁"/>
+        <div class="singleCell">
+            <label for="deploymentDelay">⏳&nbsp;</label>
+            <input type="text" id="deploymentDelay" name="deploymentDelay" class="input_data"/>
         </div>
-        <div style="display: table-cell">
-            &nbsp;
+        <div class="singleCell">
+            <input type="button" id="start-stop" name="start-stop" value="Start 🏁"/>
         </div>
     </div>
 </div>
 <canvas id="board" width="1700" height="1000">
     Sorry, i haven't ability to run with game. Check "JS Canvas" support by your browser
 </canvas>
-<canvas id="metrics" width="1700" height="1000">
+<canvas id="cfd" width="1700" height="1000">
+
+</canvas>
+<canvas id="cc" width="1700" height="1000">
 
 </canvas>
 <script type="application/javascript" src="main.js"></script>

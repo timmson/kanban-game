@@ -5,18 +5,18 @@ let config = {
     stages: [
         {
             name: "ready",
-            limit: 4,
+            limit: 3,
             isInnerDone: false
         },
         {
             name: "analysis",
             diceCount: 2,
-            limit: 2,
+            limit: 3,
             isInnerDone: true
         },
         {
             name: "development",
-            diceCount: 1,
+            diceCount: 3,
             limit: 4,
             isInnerDone: true
         },
@@ -32,6 +32,7 @@ let config = {
         },
         {
             name: "deployed",
+            delay: 7,
             isInnerDone: false
         },
     ]
@@ -47,6 +48,7 @@ $(function () {
             $("#" + stage.name + "Dices").val(stage.diceCount);
         }
     });
+    $("#deploymentDelay").val(config.stages.filter(stage => stage.name === "deployed")[0].delay);
     draw();
 });
 
@@ -60,6 +62,7 @@ $("#start-stop").click(() => {
                 stage.diceCount = $("#" + stage.name + "Dices").val();
             }
         });
+        config.stages.filter(stage => stage.name === "deployed")[0].delay = $("#deploymentDelay").val();
         /**
          * TODO Fix refresh
          * @type {Board}
@@ -88,11 +91,13 @@ let colors = {
 
 function draw() {
     let boardCanvas = document.getElementById("board");
-    let cfdCanvas = document.getElementById("metrics");
+    let cfdCanvas = document.getElementById("cfd");
+    let ccCanvas = document.getElementById("cc");
     if (boardCanvas.getContext) {
         let data = isPlaying ? board.turn() : board.view();
         drawBoard(boardCanvas.getContext("2d"), data);
         drawCFD(cfdCanvas.getContext("2d"), data);
+        drawCC(ccCanvas.getContext("2d"), data);
 
         if (isPlaying) {
             setTimeout(draw, 500);
@@ -180,7 +185,7 @@ function drawBoard(ctx, data) {
         data.columns.development.done,
         data.columns.testing.wip,
         data.columns.done.wip,
-        data.columns.deployed.wip.slice(0, 6),
+        data.columns.deployed.wip.slice(data.columns.deployed.wip.length - 6, data.columns.deployed.wip.length),
     ];
     for (let i = 0; i < allCards.length; i++) {
         for (let j = 0; j < allCards[i].length; j++) {
@@ -224,11 +229,12 @@ function drawCFD(ctx, data) {
     ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
+    let cellCount = tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready  * 1.5) : 50;
     let spec = {
-        cellWidth: Math.floor(widthBoard / 50)
+        cellWidth: Math.floor(widthBoard / cellCount)
     };
 
-    for (let i = 1; i < 100; i++) {
+    for (let i = 1; i < cellCount; i++) {
         ln(ctx, shiftX + spec.cellWidth * i, shiftY, shiftX + spec.cellWidth * i, shiftY + heightBoard, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
         if (i < Math.floor(heightBoard / spec.cellWidth)) {
             ln(ctx, shiftX, shiftY + spec.cellWidth * i, shiftX + widthBoard, shiftY + spec.cellWidth * i, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
@@ -236,14 +242,13 @@ function drawCFD(ctx, data) {
     }
 
 
-
     let currentTracing = {
-        "deployed" : data.columns.deployed.wip.length
+        "deployed": data.columns.deployed.wip.length
     };
     currentTracing.testing = currentTracing.deployed + data.columns.done.wip.length;
-    currentTracing.development = currentTracing.testing + data.columns.development.done.length;
-    currentTracing.analysis = currentTracing.development + data.columns.analysis.done.length;
-    currentTracing.ready = currentTracing.analysis + data.columns.ready.wip.length;
+    currentTracing.development = currentTracing.testing + data.columns.testing.wip.length + data.columns.development.done.length;
+    currentTracing.analysis = currentTracing.development + data.columns.development.wip.length + data.columns.analysis.done.length;
+    currentTracing.ready = currentTracing.analysis + data.columns.analysis.wip.length + data.columns.ready.wip.length;
 
     tracing.push(currentTracing);
 
@@ -271,6 +276,38 @@ function drawCFD(ctx, data) {
             ctx.fill();
         });
     });
+}
+
+function drawCC(ctx, data) {
+    ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+    ctx.lineWidth = 1;
+    rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
+    let cellCount = 100;
+    let spec = {
+        cellWidth: Math.floor(widthBoard / cellCount)
+    };
+
+    for (let i = 1; i < cellCount; i++) {
+        ln(ctx, shiftX + spec.cellWidth * i, shiftY, shiftX + spec.cellWidth * i, shiftY + heightBoard, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
+        if (i < Math.floor(heightBoard / spec.cellWidth)) {
+            ln(ctx, shiftX, shiftY + spec.cellWidth * i, shiftX + widthBoard, shiftY + spec.cellWidth * i, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
+        }
+    }
+
+    let cycleTimeMap = {};
+    data.columns.deployed.wip.map(card => card.endDay - card.startDay).forEach(cycleTime => cycleTimeMap[cycleTime] = 1 + (cycleTimeMap[cycleTime] !== undefined ? cycleTimeMap[cycleTime] : 0));
+    Object.keys(cycleTimeMap).forEach(key => {
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.setLineDash([1, 0]);
+        ctx.arc(shiftX + spec.cellWidth * key, shiftY + heightBoard - cycleTimeMap[key] * spec.cellWidth - 5 * spec.cellWidth, 3, 0, 2 * Math.PI);
+        ctx.strokeStyle = colors.development;
+        ctx.stroke();
+        ctx.fillStyle = colors.development;
+        ctx.fill();
+        ln(ctx, shiftX + spec.cellWidth * key, shiftY + heightBoard - 5 * spec.cellWidth, shiftX + spec.cellWidth * key, shiftY + heightBoard - cycleTimeMap[key] * spec.cellWidth - 5 * spec.cellWidth, colors.development, [20, 5]);
+    });
+
 }
 
 function ca(ctx, x, y, r, color, done, all) {
