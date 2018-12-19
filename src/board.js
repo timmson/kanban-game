@@ -16,32 +16,39 @@ function Board(_config) {
     };
 
     config.stages.forEach((stage, i) => {
-        let column = {
+        board.columns[stage.name] = {
             "index": i,
             "wip": []
         };
-        if (stage.limit !== undefined) {
-            column.limit = stage.limit;
-        }
-        if (stage.diceCount !== undefined) {
-            column.dices = generateDices(stage.diceCount, stage.name);
-        }
         if (stage.isInnerDone) {
-            column.done = [];
+            board.columns[stage.name].done = [];
         }
-        if (stage.delay !== undefined) {
-            column.delay = stage.delay;
-        }
+        this.updateColumn(stage, board.columns[stage.name]);
 
         if (i === 0) {
-            while (column.wip.length < column.limit) {
-                column.wip.push(generateCard());
+            while (board.columns[stage.name].wip.length < board.columns[stage.name].limit) {
+                board.columns[stage.name].wip.push(generateCard());
             }
         }
 
-        board.columns[stage.name] = column;
     });
 }
+
+Board.prototype.updatedConfig = function (config) {
+    config.stages.forEach(stage => this.updateColumn(stage, board.columns[stage.name]));
+};
+
+Board.prototype.updateColumn = function (stage, column) {
+    if (stage.limit !== undefined) {
+        column.limit = stage.limit;
+    }
+    if (stage.diceCount !== undefined) {
+        column.dices = generateDices(stage.diceCount, stage.name);
+    }
+    if (stage.delay !== undefined) {
+        column.delay = stage.delay;
+    }
+};
 
 Board.prototype.view = function () {
     return board;

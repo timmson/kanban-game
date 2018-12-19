@@ -1,77 +1,6 @@
-import $ from "jquery";
+import Vue from "vue";
 import Board from "./board.js";
 
-let config = {
-    stages: [
-        {
-            name: "ready",
-            limit: 3,
-            isInnerDone: false
-        },
-        {
-            name: "analysis",
-            diceCount: 2,
-            limit: 3,
-            isInnerDone: true
-        },
-        {
-            name: "development",
-            diceCount: 3,
-            limit: 4,
-            isInnerDone: true
-        },
-        {
-            name: "testing",
-            diceCount: 2,
-            limit: 3,
-            isInnerDone: false
-        },
-        {
-            name: "done",
-            isInnerDone: false
-        },
-        {
-            name: "deployed",
-            delay: 7,
-            isInnerDone: false
-        },
-    ]
-};
-let board = new Board(config);
-
-let tracing = [];
-
-$(function () {
-    config.stages.filter(stage => stage.limit !== undefined).forEach(stage => {
-        $("#" + stage.name + "Limit").val(stage.limit);
-        if (stage.diceCount !== undefined) {
-            $("#" + stage.name + "Dices").val(stage.diceCount);
-        }
-    });
-    $("#deploymentDelay").val(config.stages.filter(stage => stage.name === "deployed")[0].delay);
-    draw();
-});
-
-$("#start-stop").click(() => {
-    isPlaying = !isPlaying;
-    $("#start-stop").prop("value", isPlaying ? "Stop 🏁" : "Start 🏁");
-    if (isPlaying) {
-        config.stages.filter(stage => stage.limit !== undefined).forEach(stage => {
-            stage.limit = $("#" + stage.name + "Limit").val();
-            if (stage.diceCount !== undefined) {
-                stage.diceCount = $("#" + stage.name + "Dices").val();
-            }
-        });
-        config.stages.filter(stage => stage.name === "deployed")[0].delay = $("#deploymentDelay").val();
-        /**
-         * TODO Fix refresh
-         * @type {Board}
-         */
-        board = new Board(config);
-        tracing = [];
-        draw();
-    }
-});
 
 let isPlaying = false;
 let shiftX = 10;
@@ -88,6 +17,86 @@ let colors = {
     "testing": "#008100",
     "deployed": "#000000"
 };
+
+let config = {};
+let board = {};
+let tracing = [];
+
+let app = new Vue({
+    el: '#app',
+    data: {
+        startButton: "Start 🏁",
+        stages: {
+            ready: {
+                limit: 3,
+                isInnerDone: false
+            },
+            analysis: {
+                limit: 3,
+                diceCount: 2,
+                isInnerDone: true
+            },
+            development: {
+                limit: 4,
+                diceCount: 3,
+                isInnerDone: true
+            },
+            testing: {
+                limit: 3,
+                diceCount: 2,
+                isInnerDone: false
+            },
+            done: {
+                isInnerDone: false
+            },
+            deployed: {
+                delay: 7,
+                isInnerDone: false
+            }
+        }
+    },
+    methods: {
+        construct: function () {
+            tracing = [];
+            config.stages = Object.keys(this.stages).map(key => {
+                let stage = {};
+                Object.assign(stage, this.stages[key]);
+                stage.name = key;
+                return stage;
+            });
+            board = new Board(config);
+        },
+        reset: function (event) {
+            if (isPlaying) {
+                this.startToggle();
+            }
+            this.construct();
+            draw(this);
+        },
+        startToggle: function (event) {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                this.startButton = "Stop 🏁";
+                draw(this);
+            } else {
+                this.startButton = "Start 🏁"
+            }
+        }
+    },
+    mounted() {
+        this.construct();
+        draw(this);
+    },
+    updated() {
+        config.stages = Object.keys(this.stages).map(key => {
+            let stage = {};
+            Object.assign(stage, this.stages[key]);
+            stage.name = key;
+            return stage;
+        });
+        board.updatedConfig(config);
+    }
+});
 
 function draw() {
     let boardCanvas = document.getElementById("board");
@@ -229,7 +238,7 @@ function drawCFD(ctx, data) {
     ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
-    let cellCount = tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready  * 1.5) : 50;
+    let cellCount = tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready * 1.5) : 50;
     let spec = {
         cellWidth: Math.floor(widthBoard / cellCount)
     };
