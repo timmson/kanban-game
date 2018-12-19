@@ -6,7 +6,9 @@ let isPlaying = false;
 let shiftX = 10;
 let shiftY = 10;
 let widthBoard = 1600;
+let widthArea = 1700;
 let heightBoard = 950;
+let heightArea = 1000;
 let colors = {
     "text": "#000",
     "border": "#cccccc",
@@ -28,22 +30,25 @@ let app = new Vue({
         startButton: "Start 🏁",
         stages: {
             ready: {
-                limit: 3,
+                limit: 4,
                 isInnerDone: false
             },
             analysis: {
-                limit: 3,
+                limit: 2,
                 diceCount: 2,
+                complexity: 2,
                 isInnerDone: true
             },
             development: {
                 limit: 4,
                 diceCount: 3,
+                complexity : 1,
                 isInnerDone: true
             },
             testing: {
                 limit: 3,
                 diceCount: 2,
+                complexity: 3
                 isInnerDone: false
             },
             done: {
@@ -116,7 +121,7 @@ function draw() {
 }
 
 function drawBoard(ctx, data) {
-    ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+    ctx.clearRect(0, 0, widthArea, heightArea);
 
     let spec = {
         "laneWidth": widthBoard / 8,
@@ -164,11 +169,11 @@ function drawBoard(ctx, data) {
     //Labels
     columnLabel(ctx, spec.laneWidth * 0.25 + shiftX, shiftY + spec.columnLabelLevel, colors.ready, "Ready");
     minorLabel(ctx, spec.laneWidth * 0.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.ready, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 1.75 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis");
+    columnLabel(ctx, spec.laneWidth * 1.65 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis, " + config.stages.filter(stage => stage.name === "analysis")[0].diceCount);
     minorLabel(ctx, spec.laneWidth * 1.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.analysis, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 3.60 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development");
+    columnLabel(ctx, spec.laneWidth * 3.50 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development, " + config.stages.filter(stage => stage.name === "development")[0].diceCount);
     minorLabel(ctx, spec.laneWidth * 3.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.development, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 5.25 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing");
+    columnLabel(ctx, spec.laneWidth * 5.15 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing, " + config.stages.filter(stage => stage.name === "testing")[0].diceCount);
     minorLabel(ctx, spec.laneWidth * 5.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.testing, "WIP Limit");
     columnLabel(ctx, spec.laneWidth * 6.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Done");
     columnLabel(ctx, spec.laneWidth * 7.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Deployed");
@@ -185,6 +190,9 @@ function drawBoard(ctx, data) {
     wipLimitLabel(ctx, spec.laneWidth * 1.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "analysis")[0].limit);
     wipLimitLabel(ctx, spec.laneWidth * 3.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "development")[0].limit);
     wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "testing")[0].limit);
+
+    //dices
+
 
     let allCards = [
         data.columns.ready.wip,
@@ -235,7 +243,8 @@ function drawLabel(ctx, x, y, font, color, value) {
 }
 
 function drawCFD(ctx, data) {
-    ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+    ctx.clearRect(0, 0, widthArea, heightArea);
+
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
     let cellCount = tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready * 1.5) : 50;
@@ -288,10 +297,11 @@ function drawCFD(ctx, data) {
 }
 
 function drawCC(ctx, data) {
-    ctx.clearRect(shiftX, shiftY, widthBoard, heightBoard);
+    ctx.clearRect(0, 0, widthArea, heightArea);
+
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
-    let cellCount = 100;
+    let cellCount = 50;
     let spec = {
         cellWidth: Math.floor(widthBoard / cellCount)
     };
