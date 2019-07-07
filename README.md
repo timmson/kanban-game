@@ -3,9 +3,6 @@
 * Vue.js
 * JS Canvas
 
-![Image of board](https://raw.githubusercontent.com/timmson/kanban-game/master/game.png)
-
-
 ## Install and run
 ```
 npm i
@@ -15,3 +12,9 @@ webpack
 
 ## Live demo
 [https://timmson.github.io/kanban-game/](https://timmson.github.io/kanban-game/)
+
+
+## Images
+![game1](https://raw.githubusercontent.com/timmson/kanban-game/master/game1.png)
+
+![game2](https://raw.githubusercontent.com/timmson/kanban-game/master/game2.png)

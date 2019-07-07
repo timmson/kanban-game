@@ -330,7 +330,7 @@ function drawCC(ctx, data) {
 
     let cycleTimeList = data.columns.deployed.wip.map(card => card.endDay - card.startDay);
 
-    let spec = {cellColumnCount: (cycleTimeList.length > 30 ? cycleTimeList.length * 1.5 : 50)};
+    let spec = {cellColumnCount: (cycleTimeList.length > 30 ? cycleTimeList.length * 1.5 : 100)};
     spec.cellWidth = Math.floor(widthBoard / spec.cellColumnCount);
     spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
     spec.cellGridCount = 5;
