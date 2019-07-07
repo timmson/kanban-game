@@ -4,7 +4,8 @@
   "description": "Implementation of getKanban Game",
   "private": true,
   "dependencies": {
-    "vue": "2.5.21"
+    "vue": "2.5.21",
+    "vue-fullscreen": "2.1.5"
   },
   "devDependencies": {
     "webpack": "4.27.0",

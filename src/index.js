@@ -1,4 +1,5 @@
 import Vue from "vue";
+import fullscreen from 'vue-fullscreen'
 import Board from "./board.js";
 
 
@@ -24,10 +25,14 @@ let config = {};
 let board = {};
 let tracing = [];
 
+Vue.use(fullscreen);
 let app = new Vue({
     el: '#app',
     data: {
-        startButton: "Start 🏁",
+        fullscreen: false,
+        startButton: "▶️",
+        resetButton: "🔄",
+        fullscreenButton: "🎦",
         stages: {
             ready: {
                 limit: 4,
@@ -48,7 +53,7 @@ let app = new Vue({
             testing: {
                 limit: 3,
                 diceCount: 2,
-                complexity: 3
+                complexity: 3,
                 isInnerDone: false
             },
             done: {
@@ -80,17 +85,16 @@ let app = new Vue({
         },
         startToggle: function (event) {
             isPlaying = !isPlaying;
-            if (isPlaying) {
-                this.startButton = "Stop 🏁";
-                draw(this);
-            } else {
-                this.startButton = "Start 🏁"
-            }
+            this.startButton = isPlaying ? "⏸" : "▶️";
+            draw();
+        },
+        fullscreenToggle: function (event) {
+            this.fullscreen = !this.fullscreen
         }
     },
     mounted() {
         this.construct();
-        draw(this);
+        draw();
     },
     updated() {
         config.stages = Object.keys(this.stages).map(key => {

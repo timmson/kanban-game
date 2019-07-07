@@ -20,51 +20,60 @@
             width: 50px;
             text-align: center;
         }
+
+        .whiteBack {
+            background-color: #ffffff;
+        }
     </style>
 </head>
 <body>
-<div style="display: table" id="app">
-    <div style="display: table-row">
-        <div class="singleCell">
-            <label for="readyLimit">⚠&nbsp;</label>
-            <input type="text" id="readyLimit" name="readyLimit" class="input_data" v-model="stages.ready.limit"/>
+<div style="display: table;" id="app">
+    <fullscreen ref="fullscreen" :fullscreen.sync="fullscreen">
+        <div class="whiteBack">
+            <div style="display: table-row;">
+                <div class="singleCell">
+                    <label for="readyLimit">⚠&nbsp;</label>
+                    <input type="text" id="readyLimit" name="readyLimit" class="input_data" v-model="stages.ready.limit"/>
+                </div>
+                <div class="doubleCell">
+                    <label for="analysisDices">🎲&nbsp;</label>
+                    <input type="text" id="analysisDices" name="analysisDices" class="input_data" v-model="stages.analysis.diceCount"/>
+                    /
+                    <label for="analysisLimit">⚠&nbsp;</label>
+                    <input type="text" id="analysisLimit" name="analysisLimit" class="input_data" v-model="stages.analysis.limit"/>
+                </div>
+                <div class="doubleCell">
+                    <label for="developmentDices">🎲&nbsp;</label>
+                    <input type="text" id="developmentDices" name="developmentDices" class="input_data" v-model="stages.development.diceCount"/>
+                    /
+                    <label for="developmentLimit">⚠&nbsp;</label>
+                    <input type="text" id="developmentLimit" name="developmentLimit" class="input_data" v-model="stages.development.limit"/>
+                </div>
+                <div class="singleCell">
+                    <label for="testingDices">🎲&nbsp;</label>
+                    <input type="text" id="testingDices" name="testingDices" class="input_data" v-model="stages.testing.diceCount"/>
+                    /
+                    <label for="testingLimit">⚠&nbsp;</label>
+                    <input type="text" id="testingLimit" name="testingLimit" class="input_data" v-model="stages.testing.limit"/>
+                </div>
+                <div class="singleCell">
+                    <label for="deploymentDelay">⏳&nbsp;</label>
+                    <input type="text" id="deploymentDelay" name="deploymentDelay" class="input_data" v-model="stages.deployed.delay"/>
+                </div>
+                <div class="singleCell">
+                    <input type="button" id="startButton" name="startButton" v-bind:value="startButton" v-on:click="startToggle"/>
+                    <input type="button" id="resetButton" name="resetButton" v-bind:value="resetButton" v-on:click="reset"/>
+                    <input type="button" id="fullscreenButton" name="fullscreenButton" v-bind:value="fullscreenButton" v-on:click="fullscreenToggle" />
+                </div>
+            </div>
+            <canvas id="board" width="1700" height="1000"></canvas>
+            <h1 style="padding-left: 50px;">Cumulative flow diagram</h1>
+            <canvas id="cfd" width="1700" height="1000"></canvas>
+            <h1 style="padding-left: 50px;">Distribution diagram</h1>
+            <canvas id="cc" width="1700" height="1000"></canvas>
         </div>
-        <div class="doubleCell">
-            <label for="analysisDices">🎲&nbsp;</label>
-            <input type="text" id="analysisDices" name="analysisDices" class="input_data" v-model="stages.analysis.diceCount"/>
-            /
-            <label for="analysisLimit">⚠&nbsp;</label>
-            <input type="text" id="analysisLimit" name="analysisLimit" class="input_data" v-model="stages.analysis.limit"/>
-        </div>
-        <div class="doubleCell">
-            <label for="developmentDices">🎲&nbsp;</label>
-            <input type="text" id="developmentDices" name="developmentDices" class="input_data" v-model="stages.development.diceCount"/>
-            /
-            <label for="developmentLimit">⚠&nbsp;</label>
-            <input type="text" id="developmentLimit" name="developmentLimit" class="input_data" v-model="stages.development.limit"/>
-        </div>
-        <div class="singleCell">
-            <label for="testingDices">🎲&nbsp;</label>
-            <input type="text" id="testingDices" name="testingDices" class="input_data"  v-model="stages.testing.diceCount"/>
-            /
-            <label for="testingLimit">⚠&nbsp;</label>
-            <input type="text" id="testingLimit" name="testingLimit" class="input_data" v-model="stages.testing.limit"/>
-        </div>
-        <div class="singleCell">
-            <label for="deploymentDelay">⏳&nbsp;</label>
-            <input type="text" id="deploymentDelay" name="deploymentDelay" class="input_data" v-model="stages.deployed.delay"/>
-        </div>
-        <div class="singleCell">
-            <input type="button" id="start-stop" name="start-stop" v-bind:value="startButton" v-on:click="startToggle"/>
-            <input type="button" id="reset" name="reset" value="Reset 🔄 " v-on:click="reset"/>
-        </div>
-    </div>
+    </fullscreen>
 </div>
-<canvas id="board" width="1700" height="1000"></canvas>
-<h1 style="padding-left: 50px;">Cumulative flow diagram</h1>
-<canvas id="cfd" width="1700" height="1000"></canvas>
-<h1 style="padding-left: 50px;">Distribution diagram</h1>
-<canvas id="cc" width="1700" height="1000"></canvas>
 <script type="application/javascript" src="main.js"></script>
 </body>
 </html>
