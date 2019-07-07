@@ -1,15 +1,19 @@
 import Vue from "vue";
-import fullscreen from 'vue-fullscreen'
+import fullscreen from "vue-fullscreen";
+import $ from "jquery";
 import Board from "./board.js";
 
 
 let isPlaying = false;
 let shiftX = 10;
 let shiftY = 10;
-let widthBoard = 1600;
-let widthArea = 1700;
+
+const minWidthCanvas = 1600;
+let widthCanvas = 0;
+let widthBoard = 0;
+
 let heightBoard = 950;
-let heightArea = 1000;
+
 let colors = {
     "text": "#000",
     "border": "#cccccc",
@@ -27,7 +31,7 @@ let tracing = [];
 
 Vue.use(fullscreen);
 let app = new Vue({
-    el: '#app',
+    el: "#app",
     data: {
         fullscreen: false,
         startButton: "▶️",
@@ -47,7 +51,7 @@ let app = new Vue({
             development: {
                 limit: 4,
                 diceCount: 3,
-                complexity : 1,
+                complexity: 1,
                 isInnerDone: true
             },
             testing: {
@@ -90,7 +94,18 @@ let app = new Vue({
         },
         fullscreenToggle: function (event) {
             this.fullscreen = !this.fullscreen
+        },
+        handleResize: function (event) {
+            if (!isPlaying) {
+                draw();
+            }
         }
+    },
+    created() {
+        window.addEventListener("resize", this.handleResize);
+        this.handleResize();
+        const e = this.$refs.board;
+        console.log(e)
     },
     mounted() {
         this.construct();
@@ -104,10 +119,23 @@ let app = new Vue({
             return stage;
         });
         board.updatedConfig(config);
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.handleResize);
     }
 });
 
 function draw() {
+    widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
+    widthBoard = widthCanvas * 0.99;
+    heightBoard = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
+    $("canvas").attr("width", widthCanvas);
+    $("canvas").attr("height", heightBoard);
+    $(".singleCell").css("width", widthCanvas / 8);
+    $(".doubleCell").css("width", widthCanvas / 4);
+    $(".input_data").css("width", widthCanvas / 32);
+    $(".input_data").css("font-size", parseInt(heightBoard / 50) + "px");
+
     let boardCanvas = document.getElementById("board");
     let cfdCanvas = document.getElementById("cfd");
     let ccCanvas = document.getElementById("cc");
@@ -125,7 +153,7 @@ function draw() {
 }
 
 function drawBoard(ctx, data) {
-    ctx.clearRect(0, 0, widthArea, heightArea);
+    ctx.clearRect(0, 0, widthBoard, heightBoard);
 
     let spec = {
         "laneWidth": widthBoard / 8,
@@ -217,27 +245,31 @@ function drawBoard(ctx, data) {
 
 function drawCard(ctx, laneWidth, laneHeight, laneLevel, i, j, card) {
     let padding = 10;
-    rr(ctx, laneWidth * i + padding + shiftX, laneLevel + laneHeight * j + padding + shiftY, laneWidth * (i + 1) - padding + shiftX, laneLevel + laneHeight * (j + 1) + shiftY, 5, colors.cardBorder, [1, 0]);
+    rr(ctx, laneWidth * i + padding + shiftX, laneLevel + laneHeight * j + padding + shiftY, laneWidth * (i + 1) - padding + shiftX, laneLevel + laneHeight * (j + 1) + shiftY,
+        5, colors.cardBorder, [1, 0]);
 
-    ctx.font = "18px Arial";
+    ctx.font = parseInt(heightBoard / 50) + "px Arial";
     ctx.fillStyle = colors.text;
     ctx.fillText(card.cardId, laneWidth * i + padding + shiftX + 5, laneLevel + laneHeight * j + padding + shiftY + 20);
 
-    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 35, 2.5, colors.analysis, card.estimations.analysis - card.remainings.analysis, card.estimations.analysis);
-    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 52, 2.5, colors.development, card.estimations.development - card.remainings.development, card.estimations.development);
-    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 69, 2.5, colors.testing, card.estimations.testing - card.remainings.testing, card.estimations.testing);
+    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 2 * heightBoard / 55,
+        heightBoard / 250, colors.analysis, card.estimations.analysis - card.remainings.analysis, card.estimations.analysis);
+    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 3 * heightBoard / 55,
+        heightBoard / 250, colors.development, card.estimations.development - card.remainings.development, card.estimations.development);
+    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 4 * heightBoard / 55,
+        heightBoard / 250, colors.testing, card.estimations.testing - card.remainings.testing, card.estimations.testing);
 }
 
 function minorLabel(ctx, x, y, color, value) {
-    return drawLabel(ctx, x, y, "18px Arial", color, value);
+    return drawLabel(ctx, x, y, parseInt(heightBoard / 50) + "px Arial", color, value);
 }
 
 function columnLabel(ctx, x, y, color, value) {
-    return drawLabel(ctx, x, y, "28px Arial", color, value);
+    return drawLabel(ctx, x, y, parseInt(heightBoard / 40) + "px Arial", color, value);
 }
 
 function wipLimitLabel(ctx, x, y, value) {
-    return drawLabel(ctx, x, y, "32px Arial", colors.text, value);
+    return drawLabel(ctx, x, y, parseInt(heightBoard / 30) + "px Arial", colors.text, value);
 }
 
 function drawLabel(ctx, x, y, font, color, value) {
@@ -247,7 +279,7 @@ function drawLabel(ctx, x, y, font, color, value) {
 }
 
 function drawCFD(ctx, data) {
-    ctx.clearRect(0, 0, widthArea, heightArea);
+    ctx.clearRect(0, 0, widthBoard, heightBoard);
 
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
@@ -301,7 +333,7 @@ function drawCFD(ctx, data) {
 }
 
 function drawCC(ctx, data) {
-    ctx.clearRect(0, 0, widthArea, heightArea);
+    ctx.clearRect(0, 0, widthBoard, heightBoard);
 
     ctx.lineWidth = 1;
     rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
