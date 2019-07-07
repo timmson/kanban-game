@@ -85,7 +85,7 @@ let app = new Vue({
                 this.startToggle();
             }
             this.construct();
-            draw(this);
+            draw();
         },
         startToggle: function (event) {
             isPlaying = !isPlaying;
@@ -104,8 +104,6 @@ let app = new Vue({
     created() {
         window.addEventListener("resize", this.handleResize);
         this.handleResize();
-        const e = this.$refs.board;
-        console.log(e)
     },
     mounted() {
         this.construct();
@@ -140,11 +138,13 @@ function draw() {
     let boardCanvas = document.getElementById("board");
     let cfdCanvas = document.getElementById("cfd");
     let ccCanvas = document.getElementById("cc");
-    if (boardCanvas.getContext) {
+    let ddCanvas = document.getElementById("dd");
+    if (boardCanvas.getContext && board !== undefined) {
         let data = isPlaying ? board.turn() : board.view();
         drawBoard(boardCanvas.getContext("2d"), data);
         drawCFD(cfdCanvas.getContext("2d"), data);
         drawCC(ccCanvas.getContext("2d"), data);
+        drawDD(ddCanvas.getContext("2d"), data);
 
         if (isPlaying) {
             setTimeout(draw, 500);
@@ -223,8 +223,6 @@ function drawBoard(ctx, data) {
     wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "testing")[0].limit);
 
     //dices
-
-
     let allCards = [
         data.columns.ready.wip,
         data.columns.analysis.wip,
@@ -249,7 +247,7 @@ function drawCard(ctx, laneWidth, laneHeight, laneLevel, i, j, card) {
 
     ctx.font = parseInt(heightBoard / 50) + "px Arial";
     ctx.fillStyle = colors.text;
-    ctx.fillText(card.cardId, laneWidth * i + padding + shiftX + 5, laneLevel + laneHeight * j + padding + shiftY + heightBoard / 45);
+    ctx.fillText("📄 " + card.cardId, laneWidth * i + padding + shiftX + 5, laneLevel + laneHeight * j + padding + shiftY + heightBoard / 45);
 
     ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 2 * heightBoard / 55,
         heightBoard / 250, colors.analysis, card.estimations.analysis - card.remainings.analysis, card.estimations.analysis);
@@ -280,88 +278,180 @@ function drawLabel(ctx, x, y, font, color, value) {
 function drawCFD(ctx, data) {
     ctx.clearRect(0, 0, widthBoard, heightBoard);
 
-    ctx.lineWidth = 1;
-    rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
-    let cellCount = tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready * 1.5) : 50;
-    let spec = {
-        cellWidth: Math.floor(widthBoard / cellCount)
-    };
+    let spec = {cellColumnCount: tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready * 3) : 50};
+    spec.cellWidth = Math.floor(widthBoard / spec.cellColumnCount);
+    spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
+    spec.cellGridCount = 5;
 
-    for (let i = 1; i < cellCount; i++) {
-        ln(ctx, shiftX + spec.cellWidth * i, shiftY, shiftX + spec.cellWidth * i, shiftY + heightBoard, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
-        if (i < Math.floor(heightBoard / spec.cellWidth)) {
-            ln(ctx, shiftX, shiftY + spec.cellWidth * i, shiftX + widthBoard, shiftY + spec.cellWidth * i, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
+    drawGrid(ctx, spec, "count", "days");
+
+    if (data.currentDay > 0) {
+        let currentTracing = {
+            "deployed": data.columns.deployed.wip.length
+        };
+        currentTracing.testing = currentTracing.deployed + data.columns.done.wip.length;
+        currentTracing.development = currentTracing.testing + data.columns.testing.wip.length + data.columns.development.done.length;
+        currentTracing.analysis = currentTracing.development + data.columns.development.wip.length + data.columns.analysis.done.length;
+        currentTracing.ready = currentTracing.analysis + data.columns.analysis.wip.length + data.columns.ready.wip.length;
+
+        if (isPlaying) {
+            tracing.push(currentTracing);
         }
-    }
 
-
-    let currentTracing = {
-        "deployed": data.columns.deployed.wip.length
-    };
-    currentTracing.testing = currentTracing.deployed + data.columns.done.wip.length;
-    currentTracing.development = currentTracing.testing + data.columns.testing.wip.length + data.columns.development.done.length;
-    currentTracing.analysis = currentTracing.development + data.columns.development.wip.length + data.columns.analysis.done.length;
-    currentTracing.ready = currentTracing.analysis + data.columns.analysis.wip.length + data.columns.ready.wip.length;
-
-    tracing.push(currentTracing);
-
-    let lastPoint = {};
-    tracing.forEach((count, i) => {
-        Object.keys(count).forEach(key => {
-            if (lastPoint[key] === undefined) {
-                lastPoint[key] = {
-                    x: shiftX,
-                    y: heightBoard - shiftY
+        let lastPoint = {};
+        tracing.forEach((count, i) => {
+            Object.keys(count).forEach(key => {
+                if (lastPoint[key] === undefined) {
+                    lastPoint[key] = {
+                        x: spec.cellGridCount * spec.cellWidth,
+                        y: heightBoard - spec.cellGridCount * spec.cellWidth
+                    };
+                }
+                ctx.lineWidth = 3;
+                let point = {
+                    x: spec.cellGridCount * spec.cellWidth + i * spec.cellWidth,
+                    y: heightBoard - spec.cellGridCount * spec.cellWidth - spec.cellWidth * count[key]
                 };
-            }
-            ctx.lineWidth = 3;
-            let point = {
-                x: shiftX + i * spec.cellWidth,
-                y: heightBoard - shiftY - spec.cellWidth * count[key]
-            };
-            ln(ctx, lastPoint[key].x, lastPoint[key].y, point.x, point.y, colors[key], [1, 0]);
-            lastPoint[key] = point;
-            ctx.beginPath();
-            ctx.arc(lastPoint[key].x, lastPoint[key].y, 3, 0, 2 * Math.PI);
-            ctx.strokeStyle = colors[key];
-            ctx.stroke();
-            ctx.fillStyle = colors[key];
-            ctx.fill();
+                ln(ctx, lastPoint[key].x, lastPoint[key].y, point.x, point.y, colors[key], [1, 0]);
+                lastPoint[key] = point;
+                ctx.beginPath();
+                ctx.arc(lastPoint[key].x, lastPoint[key].y, 3, 0, 2 * Math.PI);
+                ctx.strokeStyle = colors[key];
+                ctx.stroke();
+                ctx.fillStyle = colors[key];
+                ctx.fill();
+            });
         });
-    });
+    }
 }
 
 function drawCC(ctx, data) {
     ctx.clearRect(0, 0, widthBoard, heightBoard);
 
-    ctx.lineWidth = 1;
-    rr(ctx, shiftX, shiftY, shiftX + widthBoard, shiftY + heightBoard, 25, colors.border, [1, 0]);
-    let cellCount = 50;
-    let spec = {
-        cellWidth: Math.floor(widthBoard / cellCount)
-    };
+    let cycleTimeList = data.columns.deployed.wip.map(card => card.endDay - card.startDay);
 
-    for (let i = 1; i < cellCount; i++) {
-        ln(ctx, shiftX + spec.cellWidth * i, shiftY, shiftX + spec.cellWidth * i, shiftY + heightBoard, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
-        if (i < Math.floor(heightBoard / spec.cellWidth)) {
-            ln(ctx, shiftX, shiftY + spec.cellWidth * i, shiftX + widthBoard, shiftY + spec.cellWidth * i, i % 5 === 0 ? "#000" : colors.border, [1, 0]);
+    let spec = {cellColumnCount: (cycleTimeList.length > 30 ? cycleTimeList.length * 1.5 : 50)};
+    spec.cellWidth = Math.floor(widthBoard / spec.cellColumnCount);
+    spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
+    spec.cellGridCount = 5;
+
+    drawGrid(ctx, spec, "# task", "days");
+
+    if (data.currentDay > 0) {
+        let lastAvg = null;
+        cycleTimeList.forEach((taskCt, i) => {
+            let peek = {
+                x: spec.cellGridCount * spec.cellWidth + spec.cellWidth * i,
+                y: heightBoard - (spec.cellGridCount + taskCt) * spec.cellWidth
+            };
+
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.setLineDash([1, 0]);
+            ctx.arc(peek.x, peek.y, 3, 0, 2 * Math.PI);
+            ctx.strokeStyle = colors.development;
+            ctx.stroke();
+            ctx.fillStyle = colors.development;
+            ctx.fill();
+
+            ctx.lineWidth = 5;
+            ln(ctx, peek.x, heightBoard - spec.cellGridCount * spec.cellWidth, peek.x, peek.y, colors.development, [1, 0]);
+
+            let rollingAvgWindow = 5;
+            let sum = 0;
+            let start = (i < rollingAvgWindow ? 0 : i - rollingAvgWindow);
+            let end = (i < cycleTimeList.length - rollingAvgWindow - 1 ? i + rollingAvgWindow : cycleTimeList.length - 1);
+
+            for (let j = start; j <= end; j++) {
+                sum += cycleTimeList[j];
+
+            }
+            let avgY = heightBoard - (spec.cellGridCount + Math.floor(sum / (end + 1 - start))) * spec.cellWidth;
+
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.setLineDash([1, 0]);
+            ctx.arc(peek.x, avgY, 3, 0, 2 * Math.PI);
+            ctx.strokeStyle = colors.analysis;
+            ctx.stroke();
+            ctx.fillStyle = colors.analysis;
+            ctx.fill();
+
+            if (lastAvg != null) {
+                ctx.lineWidth = 3;
+                ln(ctx, lastAvg.x, lastAvg.y, peek.x, avgY, colors.analysis, [1, 0]);
+            }
+
+            lastAvg = {x: peek.x, y: avgY};
+
+        });
+    }
+
+}
+
+function drawDD(ctx, data) {
+    ctx.clearRect(0, 0, widthBoard, heightBoard);
+
+    let spec = {cellColumnCount: 50};
+    spec.cellWidth = Math.floor(widthBoard / spec.cellColumnCount);
+    spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
+    spec.cellGridCount = 5;
+
+    drawGrid(ctx, spec, "days", "count");
+
+    if (data.currentDay > 0) {
+        let cycleTimeMap = {};
+        data.columns.deployed.wip.map(card => card.endDay - card.startDay).forEach(cycleTime => cycleTimeMap[cycleTime] = 1 + (cycleTimeMap[cycleTime] !== undefined ? cycleTimeMap[cycleTime] : 0));
+        Object.keys(cycleTimeMap).forEach(key => {
+            let peek = {
+                x: spec.cellGridCount * spec.cellWidth + spec.cellWidth * key,
+                y: heightBoard - (spec.cellGridCount + cycleTimeMap[key]) * spec.cellWidth
+            };
+
+            let lastPeek = {
+                x: spec.cellGridCount * spec.cellWidth + spec.cellWidth * (parseInt(key) === 0 ? 0 : key - 1),
+                y: heightBoard - (spec.cellGridCount + (cycleTimeMap[key - 1] !== undefined ? cycleTimeMap[key - 1] : 0)) * spec.cellWidth
+            };
+
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.setLineDash([1, 0]);
+            ctx.arc(peek.x, peek.y, 3, 0, 2 * Math.PI);
+            ctx.strokeStyle = colors.development;
+            ctx.stroke();
+            ctx.fillStyle = colors.development;
+            ctx.fill();
+
+            ln(ctx, lastPeek.x, lastPeek.y, peek.x, peek.y, colors.development, [1, 0]);
+            ln(ctx, peek.x, heightBoard - spec.cellGridCount * spec.cellWidth, peek.x, peek.y, colors.development, [20, 5]);
+        });
+    }
+}
+
+function drawGrid(ctx, spec, xLabel, yLabel) {
+    ctx.lineWidth = 1;
+
+    rr(ctx, 0, 0, widthBoard, heightBoard, 25, colors.border, [1, 0]);
+
+    for (let i = 1; i < spec.cellColumnCount; i++) {
+        ctx.lineWidth = (i === spec.cellGridCount ? 5 : 1);
+        ln(ctx, spec.cellWidth * i, 0, spec.cellWidth * i, heightBoard, colors[i % spec.cellGridCount === 0 ? "text" : "border"], [1, 0]);
+        if (i > spec.cellGridCount && i % spec.cellGridCount === 0) {
+            let text = (i + spec.cellGridCount >= spec.cellColumnCount) ? xLabel : i - spec.cellGridCount;
+            drawLabel(ctx, spec.cellWidth * (i - 1), heightBoard - spec.cellWidth * (spec.cellGridCount - 1), "20px Arial", colors.text, text);
         }
     }
 
-    let cycleTimeMap = {};
-    data.columns.deployed.wip.map(card => card.endDay - card.startDay).forEach(cycleTime => cycleTimeMap[cycleTime] = 1 + (cycleTimeMap[cycleTime] !== undefined ? cycleTimeMap[cycleTime] : 0));
-    Object.keys(cycleTimeMap).forEach(key => {
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.setLineDash([1, 0]);
-        ctx.arc(shiftX + spec.cellWidth * key, shiftY + heightBoard - cycleTimeMap[key] * spec.cellWidth - 5 * spec.cellWidth, 3, 0, 2 * Math.PI);
-        ctx.strokeStyle = colors.development;
-        ctx.stroke();
-        ctx.fillStyle = colors.development;
-        ctx.fill();
-        ln(ctx, shiftX + spec.cellWidth * key, shiftY + heightBoard - 5 * spec.cellWidth, shiftX + spec.cellWidth * key, shiftY + heightBoard - cycleTimeMap[key] * spec.cellWidth - 5 * spec.cellWidth, colors.development, [20, 5]);
-    });
+    for (let j = 1; j < spec.cellRowCount; j++) {
+        ctx.lineWidth = (j === spec.cellGridCount ? 5 : 1);
+        ln(ctx, 0, heightBoard - spec.cellWidth * j, widthBoard, heightBoard - spec.cellWidth * j, colors[j % spec.cellGridCount === 0 ? "text" : "border"], [1, 0]);
+        if (j > spec.cellGridCount && j % spec.cellGridCount === 0) {
+            let text = (j + spec.cellGridCount >= spec.cellRowCount) ? yLabel : j - spec.cellGridCount;
+            drawLabel(ctx, spec.cellWidth * (spec.cellGridCount - 1), heightBoard - spec.cellWidth * (j - 1), "20px Arial", colors.text, text);
+        }
+    }
 
+    ctx.lineWidth = 1;
 }
 
 function ca(ctx, x, y, r, color, done, all) {
