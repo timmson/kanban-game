@@ -8,7 +8,7 @@ let isPlaying = false;
 let shiftX = 10;
 let shiftY = 10;
 
-const minWidthCanvas = 1600;
+const minWidthCanvas = 1000;
 let widthCanvas = 0;
 let widthBoard = 0;
 let heightCanvas = 0;
@@ -127,15 +127,15 @@ let app = new Vue({
 
 function draw() {
     widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
-    widthBoard = widthCanvas * 0.99;
+    widthBoard = widthCanvas - 2 * shiftX;
     heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
-    heightBoard = heightCanvas * 0.99;
+    heightBoard = heightCanvas - 2 * shiftY;
     $("canvas").attr("width", widthCanvas);
     $("canvas").attr("height", heightCanvas);
     $(".singleCell").css("width", widthCanvas / 8);
     $(".doubleCell").css("width", widthCanvas / 4);
-    $(".input_data").css("width", widthCanvas / 32);
-    $(".input_data").css("font-size", parseInt(heightBoard / 50) + "px");
+    $(".input_data").css("width", widthCanvas / 45);
+    $(".input_data").css("font-size", parseInt(heightBoard / 60) + "px");
 
     let boardCanvas = document.getElementById("board");
     let cfdCanvas = document.getElementById("cfd");
@@ -160,56 +160,54 @@ function drawBoard(ctx, data) {
         "laneWidth": widthBoard / 8,
         "laneHeight": heightBoard * 0.1,
         "columnLabelLevel": heightBoard * 0.03,
-        "columnMinorLabelLevel": heightBoard * 0.06,
-        "wipLabelLevel": heightBoard * 0.075,
-        "wipLabelHeight": heightBoard * 0.05,
-        "dashedLevel": heightBoard * 0.15,
-        "dashedLabelLevel": heightBoard * 0.18,
-        "expediteLaneLevel": heightBoard * 0.2,
+        "wipLabelLevelDouble": heightBoard * 0.06,
+        "wipLabelLevelSingle": heightBoard * 0.08,
+        "wipLabelHeight": heightBoard * 0.04,
+        "dashedLevel": heightBoard * 0.12,
+        "dashedLabelLevel": heightBoard * 0.15,
+        "expediteLaneLevel": heightBoard * 0.18,
         "standardLaneLevel": heightBoard * 0.3,
     };
     //Lanes
     ctx.lineWidth = 3;
     let radius = 25;
 
+
     rr(ctx, shiftX, shiftY, widthBoard + shiftX, heightBoard + shiftY, radius, colors.border, [1, 0]);
     rr(ctx, shiftX, spec.expediteLaneLevel + shiftY, widthBoard + shiftX, spec.standardLaneLevel + shiftY, 0, colors.border, [1, 0]);
 
 
     ln(ctx, shiftX, shiftY + radius, shiftX, heightBoard - radius + shiftY, colors.ready, [1, 0]);
-    rr(ctx, spec.laneWidth * 0.25 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 0.75 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.ready, [1, 0]);
+    rr(ctx, spec.laneWidth * 0.30 + shiftX, spec.wipLabelLevelSingle + shiftY, spec.laneWidth * 0.70 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight + shiftY, 5, colors.ready, [1, 0]);
 
     ln(ctx, spec.laneWidth + shiftX, shiftY, spec.laneWidth + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
 
     ln(ctx, spec.laneWidth * 2 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 2 + shiftX, heightBoard + shiftY, colors.analysis, [1, 0]);
     ln(ctx, spec.laneWidth + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 3 + shiftX, spec.dashedLevel + shiftY, colors.analysis, [20, 5]);
-    rr(ctx, spec.laneWidth * 1.75 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 2.25 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.analysis, [1, 0]);
+    rr(ctx, spec.laneWidth * 1.80 + shiftX, spec.wipLabelLevelDouble + shiftY, spec.laneWidth * 2.20 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight + shiftY, 5, colors.analysis, [1, 0]);
 
     ln(ctx, spec.laneWidth * 3 + shiftX, shiftY, spec.laneWidth * 3 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
 
     ln(ctx, spec.laneWidth * 4 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 4 + shiftX, heightBoard + shiftY, colors.development, [1, 0]);
     ln(ctx, spec.laneWidth * 3 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 5 + shiftX, spec.dashedLevel + shiftY, colors.development, [20, 5]);
-    rr(ctx, spec.laneWidth * 3.75 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 4.25 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.development, [1, 0]);
+    rr(ctx, spec.laneWidth * 3.80 + shiftX, spec.wipLabelLevelDouble + shiftY, spec.laneWidth * 4.20 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight + shiftY, 5, colors.development, [1, 0]);
 
     ln(ctx, spec.laneWidth * 5 + shiftX, shiftY, spec.laneWidth * 5 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
 
     ln(ctx, spec.laneWidth * 6 + shiftX, shiftY, spec.laneWidth * 6 + shiftX, heightBoard + shiftY, colors.testing, [1, 0]);
-    rr(ctx, spec.laneWidth * 5.25 + shiftX, spec.wipLabelLevel + shiftY, spec.laneWidth * 5.75 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight + shiftY, 5, colors.testing, [1, 0]);
+    rr(ctx, spec.laneWidth * 5.30 + shiftX, spec.wipLabelLevelSingle + shiftY, spec.laneWidth * 5.70 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight + shiftY, 5, colors.testing, [1, 0]);
 
     ln(ctx, spec.laneWidth * 7 + shiftX, shiftY, spec.laneWidth * 7 + shiftX, heightBoard + shiftY, colors.deployed, [1, 0]);
 
 
     //Labels
-    columnLabel(ctx, spec.laneWidth * 0.25 + shiftX, shiftY + spec.columnLabelLevel, colors.ready, "Ready");
-    minorLabel(ctx, spec.laneWidth * 0.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.ready, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 1.65 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis, " + config.stages.filter(stage => stage.name === "analysis")[0].diceCount);
-    minorLabel(ctx, spec.laneWidth * 1.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.analysis, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 3.50 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development, " + config.stages.filter(stage => stage.name === "development")[0].diceCount);
-    minorLabel(ctx, spec.laneWidth * 3.78 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.development, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 5.15 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing, " + config.stages.filter(stage => stage.name === "testing")[0].diceCount);
-    minorLabel(ctx, spec.laneWidth * 5.28 + shiftX, shiftY + spec.columnMinorLabelLevel, colors.testing, "WIP Limit");
-    columnLabel(ctx, spec.laneWidth * 6.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Done");
-    columnLabel(ctx, spec.laneWidth * 7.25 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Deployed");
+    columnLabel(ctx, spec.laneWidth * 0.40 + shiftX, shiftY + spec.columnLabelLevel, colors.ready, "Ready");
+    columnLabel(ctx, spec.laneWidth * 1.70 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis, " + config.stages.filter(stage => stage.name === "analysis")[0].diceCount + " x 👩🏻‍🦰");
+    columnLabel(ctx, spec.laneWidth * 3.70 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development, " + config.stages.filter(stage => stage.name === "development")[0].diceCount + " x 🧔🏻");
+    columnLabel(ctx, spec.laneWidth * 5.20 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing, " + config.stages.filter(stage => stage.name === "testing")[0].diceCount + " x 👱🏽‍♀");
+    columnLabel(ctx, spec.laneWidth * 6.35 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Done");
+    minorLabel(ctx, spec.laneWidth * 6.30 + shiftX, shiftY + spec.wipLabelLevelSingle * 1.5, colors.text, "🎁 every " + config.stages.filter(stage => stage.name === "deployed")[0].delay + " days");
+    columnLabel(ctx, spec.laneWidth * 7.30 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Deployed");
 
     //Minor labels
     minorLabel(ctx, spec.laneWidth * 1.25 + shiftX, spec.dashedLabelLevel + shiftY, colors.analysis, "In Progress");
@@ -219,10 +217,10 @@ function drawBoard(ctx, data) {
 
 
     //Limits
-    wipLimitLabel(ctx, spec.laneWidth * 0.40 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "ready")[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 1.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "analysis")[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 3.90 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "development")[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevel + spec.wipLabelHeight, config.stages.filter(stage => stage.name === "testing")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 0.45 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "ready")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 1.98 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "analysis")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 3.98 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "development")[0].limit);
+    wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "testing")[0].limit);
 
     //dices
 
@@ -251,7 +249,7 @@ function drawCard(ctx, laneWidth, laneHeight, laneLevel, i, j, card) {
 
     ctx.font = parseInt(heightBoard / 50) + "px Arial";
     ctx.fillStyle = colors.text;
-    ctx.fillText(card.cardId, laneWidth * i + padding + shiftX + 5, laneLevel + laneHeight * j + padding + shiftY + 20);
+    ctx.fillText(card.cardId, laneWidth * i + padding + shiftX + 5, laneLevel + laneHeight * j + padding + shiftY + heightBoard / 45);
 
     ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 2 * heightBoard / 55,
         heightBoard / 250, colors.analysis, card.estimations.analysis - card.remainings.analysis, card.estimations.analysis);
