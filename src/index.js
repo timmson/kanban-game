@@ -11,7 +11,7 @@ let shiftY = 10;
 const minWidthCanvas = 1600;
 let widthCanvas = 0;
 let widthBoard = 0;
-
+let heightCanvas = 0;
 let heightBoard = 950;
 
 let colors = {
@@ -128,9 +128,10 @@ let app = new Vue({
 function draw() {
     widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
     widthBoard = widthCanvas * 0.99;
-    heightBoard = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
+    heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
+    heightBoard = heightCanvas * 0.99;
     $("canvas").attr("width", widthCanvas);
-    $("canvas").attr("height", heightBoard);
+    $("canvas").attr("height", heightCanvas);
     $(".singleCell").css("width", widthCanvas / 8);
     $(".doubleCell").css("width", widthCanvas / 4);
     $(".input_data").css("width", widthCanvas / 32);
