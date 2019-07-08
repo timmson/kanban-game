@@ -99,10 +99,20 @@ let app = new Vue({
             if (!isPlaying) {
                 draw();
             }
+        },
+        handleKey: function (event) {
+            if (event.keyCode === 70) {
+                this.fullscreenToggle(event);
+            } else if (event.keyCode === 83) {
+                this.startToggle(event);
+            } else if (event.keyCode === 82) {
+                this.reset(event);
+            }
         }
     },
     created() {
         window.addEventListener("resize", this.handleResize);
+        window.addEventListener("keyup", this.handleKey);
         this.handleResize();
     },
     mounted() {
@@ -120,6 +130,7 @@ let app = new Vue({
     },
     destroyed() {
         window.removeEventListener("resize", this.handleResize);
+        window.removeEventListener("keyup", this.handleKey)
     }
 });
 
