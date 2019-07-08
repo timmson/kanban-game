@@ -278,12 +278,15 @@ function drawLabel(ctx, x, y, font, color, value) {
 function drawCFD(ctx, data) {
     ctx.clearRect(0, 0, widthBoard, heightBoard);
 
-    let spec = {cellColumnCount: tracing.length > 20 ? Math.max(tracing.length * 1.5, tracing[tracing.length - 1].ready * 3) : 50};
-    spec.cellWidth = Math.floor(widthBoard / spec.cellColumnCount);
+    let spec = {cellGridCount: 5};
+    spec.cellWidth = tracing.length > 10 ? Math.min(
+        Math.floor(heightBoard  / (tracing[tracing.length - 1].ready * 1.5)),
+        Math.floor(widthBoard  / (tracing.length * 1.5))
+    ) : 32;
+    spec.cellColumnCount = Math.floor(widthBoard / spec.cellWidth);
     spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
-    spec.cellGridCount = 5;
 
-    drawGrid(ctx, spec, "count", "days");
+    drawGrid(ctx, spec, "days", "count");
 
     if (data.currentDay > 0) {
         let currentTracing = {
@@ -330,10 +333,13 @@ function drawCC(ctx, data) {
 
     let cycleTimeList = data.columns.deployed.wip.map(card => card.endDay - card.startDay);
 
-    let spec = {cellColumnCount: (cycleTimeList.length > 30 ? cycleTimeList.length * 1.5 : 100)};
-    spec.cellWidth = Math.floor(widthBoard / spec.cellColumnCount);
+    let spec = {cellGridCount: 5};
+    spec.cellWidth = cycleTimeList.length > 5 ? Math.min(
+        Math.floor(heightBoard  / (Math.max.apply(Math, cycleTimeList) * 1.5)),
+        Math.floor(widthBoard  / (cycleTimeList.length * 1.5))
+    ) : 24;
+    spec.cellColumnCount = Math.floor(widthBoard / spec.cellWidth);
     spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
-    spec.cellGridCount = 5;
 
     drawGrid(ctx, spec, "# task", "days");
 
