@@ -26,7 +26,7 @@ let colors = {
 };
 
 let config = {};
-let board = {};
+let board = null;
 let tracing = [];
 
 Vue.use(fullscreen);
@@ -96,7 +96,7 @@ let app = new Vue({
             this.fullscreen = !this.fullscreen
         },
         handleResize: function (event) {
-            if (!isPlaying) {
+            if (!isPlaying && board !== null) {
                 draw();
             }
         },
@@ -150,7 +150,7 @@ function draw() {
     let cfdCanvas = document.getElementById("cfd");
     let ccCanvas = document.getElementById("cc");
     let ddCanvas = document.getElementById("dd");
-    if (boardCanvas.getContext && board !== undefined) {
+    if (boardCanvas.getContext) {
         let data = isPlaying ? board.turn() : board.view();
         drawBoard(boardCanvas.getContext("2d"), data);
         drawCFD(cfdCanvas.getContext("2d"), data);
@@ -291,8 +291,8 @@ function drawCFD(ctx, data) {
 
     let spec = {cellGridCount: 5};
     spec.cellWidth = tracing.length > 10 ? Math.min(
-        Math.floor(heightBoard  / (tracing[tracing.length - 1].ready * 1.5)),
-        Math.floor(widthBoard  / (tracing.length * 1.5))
+        Math.floor(heightBoard / (tracing[tracing.length - 1].ready * 1.5)),
+        Math.floor(widthBoard / (tracing.length * 1.5))
     ) : 32;
     spec.cellColumnCount = Math.floor(widthBoard / spec.cellWidth);
     spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
@@ -346,8 +346,8 @@ function drawCC(ctx, data) {
 
     let spec = {cellGridCount: 5};
     spec.cellWidth = cycleTimeList.length > 5 ? Math.min(
-        Math.floor(heightBoard  / (Math.max.apply(Math, cycleTimeList) * 1.5)),
-        Math.floor(widthBoard  / (cycleTimeList.length * 1.5))
+        Math.floor(heightBoard / (Math.max.apply(Math, cycleTimeList) * 1.5)),
+        Math.floor(widthBoard / (cycleTimeList.length * 1.5))
     ) : 24;
     spec.cellColumnCount = Math.floor(widthBoard / spec.cellWidth);
     spec.cellRowCount = Math.floor(heightBoard / spec.cellWidth);
