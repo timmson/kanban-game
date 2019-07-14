@@ -1,5 +1,5 @@
 import Vue from "vue";
-import fullscreen from "vue-fullscreen";
+import VueFullscreen from "vue-fullscreen";
 import $ from "jquery";
 import Board from "./board.js";
 
@@ -29,7 +29,7 @@ let config = {};
 let board = null;
 let tracing = [];
 
-Vue.use(fullscreen);
+Vue.use(VueFullscreen);
 let app = new Vue({
     el: "#app",
     data: {
@@ -37,6 +37,12 @@ let app = new Vue({
         startButton: "▶️",
         resetButton: "🔄",
         fullscreenButton: "🎦",
+        toggles: {
+            isUtilOpen: false,
+            isCFDOpen: false,
+            isCCOpen: false,
+            isDDOpen: false
+        },
         stages: {
             ready: {
                 limit: 4,
