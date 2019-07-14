@@ -33,15 +33,32 @@ Vue.use(VueFullscreen);
 let app = new Vue({
     el: "#app",
     data: {
-        fullscreen: false,
         startButton: "▶️",
         resetButton: "🔄",
         fullscreenButton: "🎦",
         toggles: {
+            isFullscreen: false,
             isUtilOpen: false,
             isCFDOpen: false,
             isCCOpen: false,
             isDDOpen: false
+        },
+        info: {
+            cfd: {
+                styleClass: "info_positive",
+                sign: "",
+                value: 0
+            },
+            cc: {
+                styleClass: "info_positive",
+                sign: "",
+                value: 0
+            },
+            dd: {
+                styleClass: "info_positive",
+                sign: "",
+                value: 0
+            }
         },
         stages: {
             ready: {
@@ -70,7 +87,7 @@ let app = new Vue({
                 isInnerDone: false
             },
             deployed: {
-                delay: 7,
+                delay: 3,
                 isInnerDone: false
             }
         }
@@ -98,9 +115,6 @@ let app = new Vue({
             this.startButton = isPlaying ? "⏸" : "▶️";
             draw();
         },
-        fullscreenToggle: function (event) {
-            this.fullscreen = !this.fullscreen
-        },
         handleResize: function (event) {
             if (!isPlaying && board !== null) {
                 draw();
@@ -108,7 +122,7 @@ let app = new Vue({
         },
         handleKey: function (event) {
             if (event.keyCode === 70) {
-                this.fullscreenToggle(event);
+                this.toggles.isFullscreen = !this.toggles.isFullscreen;
             } else if (event.keyCode === 83) {
                 this.startToggle(event);
             } else if (event.keyCode === 82) {
@@ -342,6 +356,15 @@ function drawCFD(ctx, data) {
                 ctx.fill();
             });
         });
+
+        if ((currentTracing.ready - currentTracing.deployed) > app.info.cfd.value) {
+            app.info.cfd.styleClass = "info_negative";
+            app.info.cfd.sign = "⬆️";
+        } else {
+            app.info.cfd.styleClass = "info_positive";
+            app.info.cfd.sign = "⬇️";
+        }
+        app.info.cfd.value = (currentTracing.ready - currentTracing.deployed);
     }
 }
 
@@ -406,8 +429,21 @@ function drawCC(ctx, data) {
             }
 
             lastAvg = {x: peek.x, y: avgY};
-
         });
+
+
+        if (cycleTimeList.length >= 5) {
+            let avg = cycleTimeList.slice(-5, -1).reduce((a, b) => a + b) / 5;
+            if (avg > app.info.cc.value) {
+                app.info.cc.styleClass = "info_negative";
+                app.info.cc.sign = "⬆️";
+            } else {
+                app.info.cc.styleClass = "info_positive";
+                app.info.cc.sign = "⬇️";
+            }
+            app.info.cc.value = avg;
+        }
+
     }
 
 }
@@ -425,7 +461,13 @@ function drawDD(ctx, data) {
     if (data.currentDay > 0) {
         let cycleTimeMap = {};
         data.columns.deployed.wip.map(card => card.endDay - card.startDay).forEach(cycleTime => cycleTimeMap[cycleTime] = 1 + (cycleTimeMap[cycleTime] !== undefined ? cycleTimeMap[cycleTime] : 0));
+        let max = {
+            key: 0,
+            val: 0
+        };
         Object.keys(cycleTimeMap).forEach(key => {
+            max = cycleTimeMap[key] >= max.val ? {key: key, val: cycleTimeMap[key]} : max;
+
             let peek = {
                 x: spec.cellGridCount * spec.cellWidth + spec.cellWidth * key,
                 y: heightBoard - (spec.cellGridCount + cycleTimeMap[key]) * spec.cellWidth
@@ -448,6 +490,15 @@ function drawDD(ctx, data) {
             ln(ctx, lastPeek.x, lastPeek.y, peek.x, peek.y, colors.development, [1, 0]);
             ln(ctx, peek.x, heightBoard - spec.cellGridCount * spec.cellWidth, peek.x, peek.y, colors.development, [20, 5]);
         });
+
+        if (max.key > app.info.dd.value) {
+            app.info.dd.styleClass = "info_negative";
+            app.info.dd.sign = "⬆️";
+        } else {
+            app.info.dd.styleClass = "info_positive";
+            app.info.dd.sign = "⬇️";
+        }
+        app.info.dd.value = max.key;
     }
 }
 

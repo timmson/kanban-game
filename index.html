@@ -25,11 +25,19 @@
         .whiteBack {
             background-color: #ffffff;
         }
+
+        span.info_positive {
+            color: green;
+        }
+
+        span.info_negative {
+            color: red;
+        }
     </style>
 </head>
 <body>
 <div id="app" style="display: table;">
-    <fullscreen :fullscreen.sync="fullscreen" ref="fullscreen">
+    <fullscreen :fullscreen.sync="toggles.isFullscreen" ref="fullscreen">
         <div class="whiteBack">
             <div style="display: table-row;">
                 <div class="singleCell">
@@ -64,23 +72,32 @@
                 <div class="singleCell">
                     <input @click="startToggle" id="startButton" name="startButton" type="button" v-bind:value="startButton"/>
                     <input @click="reset" id="resetButton" name="resetButton" type="button" v-bind:value="resetButton"/>
-                    <input @click="fullscreenToggle" id="fullscreenButton" name="fullscreenButton" type="button" v-bind:value="fullscreenButton"/>
+                    <input @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton" name="fullscreenButton" type="button" v-bind:value="fullscreenButton"/>
                 </div>
             </div>
             <canvas height="1000" id="board" width="1700"></canvas>
-<!--            <h3 @click="toggles.isUtilOpen = !toggles.isUtilOpen" style="padding-left: 50px; cursor: pointer;">Utilization diagram</h3>
-            <div v-show="toggles.isUtilOpen">
-                <canvas height="1000" id="util" width="1700"></canvas>
-            </div>-->
-            <h3 @click="toggles.isCFDOpen = !toggles.isCFDOpen" style="padding-left: 50px; cursor: pointer;">Cumulative flow diagram</h3>
+            <!--            <h3 @click="toggles.isUtilOpen = !toggles.isUtilOpen" style="padding-left: 50px; cursor: pointer;">Utilization diagram</h3>
+                        <div v-show="toggles.isUtilOpen">
+                            <canvas height="1000" id="util" width="1700"></canvas>
+                        </div>-->
+            <h3 @click="toggles.isCFDOpen = !toggles.isCFDOpen" style="padding-left: 50px; cursor: pointer;">
+                Cumulative flow diagram
+                <span id="cfdInfo" v-bind:class="info.cfd.styleClass">[How many issues is in progress: {{info.cfd.value}} {{info.cfd.sign}}]</span>
+            </h3>
             <div v-show="toggles.isCFDOpen">
                 <canvas height="1000" id="cfd" width="1700"></canvas>
             </div>
-            <h3 @click="toggles.isCCOpen = !toggles.isCCOpen" style="padding-left: 50px; cursor: pointer;">Control Chart</h3>
-            <div v-show="toggcles.isCCOpen">
+            <h3 @click="toggles.isCCOpen = !toggles.isCCOpen" style="padding-left: 50px; cursor: pointer;">
+                Control Chart
+                <span id="ccInfo" v-bind:class="info.cc.styleClass">[Average issue cycleTime: {{info.cc.value}} {{info.cc.sign}}]</span>
+            </h3>
+            <div v-show="toggles.isCCOpen">
                 <canvas height="1000" id="cc" width="1700"></canvas>
             </div>
-            <h3 @click="toggles.isDDOpen = !toggles.isDDOpen" style="padding-left: 50px; cursor: pointer;">Distribution diagram</h3>
+            <h3 @click="toggles.isDDOpen = !toggles.isDDOpen" style="padding-left: 50px; cursor: pointer;">
+                Distribution diagram
+                <span id="ddInfo" v-bind:class="info.dd.styleClass">[Expectation: {{info.dd.value}} {{info.dd.sign}}]</span>
+            </h3>
             <div v-show="toggles.isDDOpen">
                 <canvas height="1000" id="dd" width="1700"></canvas>
             </div>
