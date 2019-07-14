@@ -38,26 +38,31 @@ let app = new Vue({
         fullscreenButton: "🎦",
         toggles: {
             isFullscreen: false,
-            isUtilOpen: false,
-            isCFDOpen: false,
-            isCCOpen: false,
-            isDDOpen: false
         },
         info: {
+            util: {
+                styleClass: "info_positive",
+                sign: "",
+                value: 0,
+                visible: false
+            },
             cfd: {
                 styleClass: "info_positive",
                 sign: "",
-                value: 0
+                value: 0,
+                visible: false
             },
             cc: {
                 styleClass: "info_positive",
                 sign: "",
-                value: 0
+                value: 0,
+                visible: false
             },
             dd: {
                 styleClass: "info_positive",
                 sign: "",
-                value: 0
+                value: 0,
+                visible: false
             }
         },
         stages: {
@@ -173,6 +178,7 @@ function draw() {
     if (boardCanvas.getContext) {
         let data = isPlaying ? board.turn() : board.view();
         drawBoard(boardCanvas.getContext("2d"), data);
+        drawUtil(null, data);
         drawCFD(cfdCanvas.getContext("2d"), data);
         drawCC(ccCanvas.getContext("2d"), data);
         drawDD(ddCanvas.getContext("2d"), data);
@@ -304,6 +310,10 @@ function drawLabel(ctx, x, y, font, color, value) {
     ctx.font = font;
     ctx.fillStyle = color;
     ctx.fillText(value, x, y);
+}
+
+function drawUtil(ctx, data) {
+    app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis  + "% ,🧔🏻 - " + data.currentDayUtilization.development  + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing  + "%";
 }
 
 function drawCFD(ctx, data) {

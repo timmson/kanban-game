@@ -76,29 +76,32 @@
                 </div>
             </div>
             <canvas height="1000" id="board" width="1700"></canvas>
-            <!--            <h3 @click="toggles.isUtilOpen = !toggles.isUtilOpen" style="padding-left: 50px; cursor: pointer;">Utilization diagram</h3>
-                        <div v-show="toggles.isUtilOpen">
-                            <canvas height="1000" id="util" width="1700"></canvas>
-                        </div>-->
-            <h3 @click="toggles.isCFDOpen = !toggles.isCFDOpen" style="padding-left: 50px; cursor: pointer;">
+                       <!--<h3 @click="toggles.isUtilOpen = !toggles.isUtilOpen" style="padding-left: 50px; cursor: pointer;">Utilization diagram</h3>-->
+            <h3 style="padding-left: 50px;">Utilization
+                <span id="utilInfo" v-bind:class="info.util.styleClass">[Utilization, %: {{info.util.value}} {{info.util.sign}}]</span>
+            </h3>
+            <!--  <div v-show="toggles.isUtilOpen">
+                 <canvas height="1000" id="util" width="1700"></canvas>
+             </div>-->
+            <h3 @click="info.cfd.visible = !info.cfd.visible" style="padding-left: 50px; cursor: pointer;">
                 Cumulative flow diagram
                 <span id="cfdInfo" v-bind:class="info.cfd.styleClass">[How many issues is in progress: {{info.cfd.value}} {{info.cfd.sign}}]</span>
             </h3>
-            <div v-show="toggles.isCFDOpen">
+            <div v-show="info.cfd.visible">
                 <canvas height="1000" id="cfd" width="1700"></canvas>
             </div>
-            <h3 @click="toggles.isCCOpen = !toggles.isCCOpen" style="padding-left: 50px; cursor: pointer;">
+            <h3 @click="info.cc.visible = !info.cc.visible" style="padding-left: 50px; cursor: pointer;">
                 Control Chart
                 <span id="ccInfo" v-bind:class="info.cc.styleClass">[Average issue cycleTime: {{info.cc.value}} {{info.cc.sign}}]</span>
             </h3>
-            <div v-show="toggles.isCCOpen">
+            <div v-show="info.cc.visible">
                 <canvas height="1000" id="cc" width="1700"></canvas>
             </div>
-            <h3 @click="toggles.isDDOpen = !toggles.isDDOpen" style="padding-left: 50px; cursor: pointer;">
+            <h3 @click="info.dd.visible = !info.dd.visible" style="padding-left: 50px; cursor: pointer;">
                 Distribution diagram
                 <span id="ddInfo" v-bind:class="info.dd.styleClass">[Expectation: {{info.dd.value}} {{info.dd.sign}}]</span>
             </h3>
-            <div v-show="toggles.isDDOpen">
+            <div v-show="info.dd.visible">
                 <canvas height="1000" id="dd" width="1700"></canvas>
             </div>
             <a href="https://timmson.github.io/fruit-report/" style="padding-left: 50px;">Read more about these diagrams (on Russian)</a>
