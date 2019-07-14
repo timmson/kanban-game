@@ -77,14 +77,13 @@
                 <canvas height="1000" id="cfd" width="1700"></canvas>
             </div>
             <h3 @click="toggles.isCCOpen = !toggles.isCCOpen" style="padding-left: 50px; cursor: pointer;">Control Chart</h3>
-            <div v-show="toggles.isCCOpen">
+            <div v-show="toggcles.isCCOpen">
                 <canvas height="1000" id="cc" width="1700"></canvas>
             </div>
             <h3 @click="toggles.isDDOpen = !toggles.isDDOpen" style="padding-left: 50px; cursor: pointer;">Distribution diagram</h3>
             <div v-show="toggles.isDDOpen">
                 <canvas height="1000" id="dd" width="1700"></canvas>
             </div>
-            </carousel>
             <a href="https://timmson.github.io/fruit-report/" style="padding-left: 50px;">Read more about these diagrams (on Russian)</a>
         </div>
     </fullscreen>
