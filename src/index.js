@@ -313,7 +313,7 @@ function drawLabel(ctx, x, y, font, color, value) {
 }
 
 function drawUtil(ctx, data) {
-    app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis  + "% ,🧔🏻 - " + data.currentDayUtilization.development  + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing  + "%";
+    app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis + "% ,🧔🏻 - " + data.currentDayUtilization.development + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing + "%";
 }
 
 function drawCFD(ctx, data) {
@@ -470,7 +470,8 @@ function drawDD(ctx, data) {
 
     if (data.currentDay > 0) {
         let cycleTimeMap = {};
-        data.columns.deployed.wip.map(card => card.endDay - card.startDay).forEach(cycleTime => cycleTimeMap[cycleTime] = 1 + (cycleTimeMap[cycleTime] !== undefined ? cycleTimeMap[cycleTime] : 0));
+        let cycleTime = data.columns.deployed.wip.map(card => card.endDay - card.startDay);
+        cycleTime.forEach(cycleTime => cycleTimeMap[cycleTime] = 1 + (cycleTimeMap[cycleTime] !== undefined ? cycleTimeMap[cycleTime] : 0));
         let max = {
             key: 0,
             val: 0
@@ -501,14 +502,24 @@ function drawDD(ctx, data) {
             ln(ctx, peek.x, heightBoard - spec.cellGridCount * spec.cellWidth, peek.x, peek.y, colors.development, [20, 5]);
         });
 
-        if (max.key > app.info.dd.value) {
+        let perentile = 0;
+        let cnt = 0;
+        let border = 0.85;
+
+        while ((cnt / cycleTime.length) <= border) {
+            cnt = cycleTime.filter(t => t < perentile).length;
+            perentile++;
+        }
+
+        if (perentile > app.info.dd.value) {
             app.info.dd.styleClass = "info_negative";
             app.info.dd.sign = "⬆️";
         } else {
             app.info.dd.styleClass = "info_positive";
             app.info.dd.sign = "⬇️";
         }
-        app.info.dd.value = max.key;
+
+        app.info.dd.value = perentile;
     }
 }
 

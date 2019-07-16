@@ -99,7 +99,7 @@
             </div>
             <h3 @click="info.dd.visible = !info.dd.visible" style="padding-left: 50px; cursor: pointer;">
                 Distribution diagram
-                <span id="ddInfo" v-bind:class="info.dd.styleClass">[Expectation: {{info.dd.value}} {{info.dd.sign}}]</span>
+                <span id="ddInfo" v-bind:class="info.dd.styleClass">[85 percentile: {{info.dd.value}} {{info.dd.sign}}]</span>
             </h3>
             <div v-show="info.dd.visible">
                 <canvas height="1000" id="dd" width="1700"></canvas>
