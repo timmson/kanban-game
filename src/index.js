@@ -69,31 +69,51 @@ let app = new Vue({
             ready: {
                 limit: 4,
                 isInnerDone: false,
+                cards: {
+                    wip: []
+                }
             },
             analysis: {
                 limit: 2,
                 diceCount: 2,
                 complexity: 2,
-                isInnerDone: true
+                isInnerDone: true,
+                cards: {
+                    wip: [],
+                    done: []
+                }
             },
             development: {
                 limit: 4,
                 diceCount: 3,
                 complexity: 1,
-                isInnerDone: true
+                isInnerDone: true,
+                cards: {
+                    wip: [],
+                    done: []
+                }
             },
             testing: {
                 limit: 3,
                 diceCount: 2,
                 complexity: 3,
-                isInnerDone: false
+                isInnerDone: false,
+                cards: {
+                    wip:[]
+                }
             },
             done: {
-                isInnerDone: false
+                isInnerDone: false,
+                cards: {
+                    wip:[]
+                }
             },
             deployed: {
                 delay: 3,
-                isInnerDone: false
+                isInnerDone: false,
+                cards: {
+                    wip:[]
+                }
             }
         }
     },
@@ -144,12 +164,12 @@ let app = new Vue({
         this.construct();
         let d = board.view().columns;
         Object.keys(d).forEach(stageName => {
-            this.stages[stageName].cards = d[stageName].wip;
+            this.stages[stageName].cards = d[stageName];
         });
         console.log(" 111111");
         console.log(JSON.stringify(this.stages.ready));
         this.$forceUpdate();
-        draw();
+        //draw();
     },
     updated() {
         config.stages = Object.keys(this.stages).map(key => {

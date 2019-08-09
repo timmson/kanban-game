@@ -3,79 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Kanban game</title>
-    <style>
-        .singleCell {
-            display: table-cell;
-            text-align: center;
-            width: 209px;
-        }
-
-        .doubleCell {
-            display: table-cell;
-            text-align: center;
-            width: 398px;
-        }
-
-        .input_data {
-            font-size: 20pt;
-            width: 50px;
-            text-align: center;
-        }
-
-        .whiteBack {
-            background-color: #ffffff;
-        }
-
-        span.info_positive {
-            color: green;
-        }
-
-        span.info_negative {
-            color: red;
-        }
-
-        div.b-table {
-            border: 3px solid #ccc;
-            border-radius: 25px;
-            min-width: 900px;
-            width: 99%;
-            display: table;
-        }
-
-        div.b-column {
-            display: table-cell;
-            width: 1%;
-            border: 3px solid #f00;
-        }
-
-        div.b-header-row {
-            display: table-row;
-            height: 200px;
-        }
-
-        div.b-expedite-row {
-            display: table-row;
-            height: 150px;
-        }
-
-        div.b-regular-row {
-            display: table-row;
-            height: 600px;
-        }
-
-        div.b-card {
-            width: auto;
-            height: 100px;
-            border-radius: 15px;
-            margin: 5px;
-            padding: 10px;
-            border: 3px solid #ccc;
-            font-size: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css"/>
 </head>
 <body>
-<div id="app" style="display: table;">
+<div id="app" style="display: table; width: 99%">
     <fullscreen :fullscreen.sync="toggles.isFullscreen" ref="fullscreen">
         <div class="whiteBack">
             <div style="display: table-row;">
@@ -114,50 +45,50 @@
                     <input @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton" name="fullscreenButton" type="button" v-bind:value="fullscreenButton"/>
                 </div>
             </div>
-            <canvas height="1000" id="board" width="1700"></canvas>
-                       <!--<h3 @click="toggles.isUtilOpen = !toggles.isUtilOpen" style="padding-left: 50px; cursor: pointer;">Utilization diagram</h3>-->
             <div class="b-table">
                 <div class="b-header-row">
                     <div class="b-column" v-for="(stageData, stageName) in stages">{{ stageName }}</div>
                 </div>
+                <div class="b-header2-row">
+                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
+                        <div class="b-column-double" v-if="stageData.isInnerDone">
+                            WIP
+                        </div>
+                        <div class="b-column-double" v-if="stageData.isInnerDone">
+                            Done
+                        </div>
+                    </div>
+                </div>
                 <div class="b-expedite-row">
-                    <div class="b-column" v-for="(stageData, stageName) in stages">&nbsp;</div>
+                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
+                        <div class="b-column-double" v-if="stageData.isInnerDone">
+                            &nbsp;
+                        </div>
+                        <div class="b-column-double" v-if="stageData.isInnerDone">
+                            &nbsp;
+                        </div>
+                    </div>
                 </div>
                 <div class="b-regular-row">
-                    <div class="b-column" v-for="(stageData, stageName) in stages">
-                        <div class="b-card" v-for="(card) in stageData.cards">
+                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
+                        <div class="b-column-double" v-if="stageData.isInnerDone">
+                            <div class="b-card" v-for="(card) in stageData.cards.wip">
+                                {{ card.cardId }}<br/>
+                                {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
+                            </div>
+                        </div>
+                        <div class="b-column-double" v-if="stageData.isInnerDone">
+                            <div class="b-card" v-for="(card) in stageData.cards.done">
+                                {{ card.cardId }}<br/>
+                                {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
+                            </div>
+                        </div>
+                        <div class="b-card" v-for="(card) in stageData.cards.wip" v-if="!stageData.isInnerDone">
                             {{ card.cardId }}<br/>
                             {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
                         </div>
                     </div>
                 </div>
-            </div>
-            <h3 style="padding-left: 50px;">Utilization
-                <span id="utilInfo" v-bind:class="info.util.styleClass">[Utilization, %: {{info.util.value}} {{info.util.sign}}]</span>
-            </h3>
-            <!--  <div v-show="toggles.isUtilOpen">
-                 <canvas height="1000" id="util" width="1700"></canvas>
-             </div>-->
-            <h3 @click="info.cfd.visible = !info.cfd.visible" style="padding-left: 50px; cursor: pointer;">
-                Cumulative flow diagram
-                <span id="cfdInfo" v-bind:class="info.cfd.styleClass">[How many issues is in progress: {{info.cfd.value}} {{info.cfd.sign}}]</span>
-            </h3>
-            <div v-show="info.cfd.visible">
-                <canvas height="1000" id="cfd" width="1700"></canvas>
-            </div>
-            <h3 @click="info.cc.visible = !info.cc.visible" style="padding-left: 50px; cursor: pointer;">
-                Control Chart
-                <span id="ccInfo" v-bind:class="info.cc.styleClass">[Average issue cycleTime: {{info.cc.value}} {{info.cc.sign}}]</span>
-            </h3>
-            <div v-show="info.cc.visible">
-                <canvas height="1000" id="cc" width="1700"></canvas>
-            </div>
-            <h3 @click="info.dd.visible = !info.dd.visible" style="padding-left: 50px; cursor: pointer;">
-                Distribution diagram
-                <span id="ddInfo" v-bind:class="info.dd.styleClass">[85 percentile: {{info.dd.value}} {{info.dd.sign}}]</span>
-            </h3>
-            <div v-show="info.dd.visible">
-                <canvas height="1000" id="dd" width="1700"></canvas>
             </div>
             <a href="https://timmson.github.io/fruit-report/" style="padding-left: 50px;">Read more about these diagrams (on Russian)</a>
         </div>
