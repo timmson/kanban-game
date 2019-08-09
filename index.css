@@ -133,6 +133,7 @@ span.info_negative {
 
 .b-regular-row .b-column {
     border-top: 1px solid #ccc;
+    height: 600px;
 }
 
 .b-regular-row .b-column-x2 {

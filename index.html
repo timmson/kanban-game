@@ -83,7 +83,7 @@
                                 {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
                             </div>
                         </div>
-                        <div class="b-card" v-for="(card) in stageData.cards.wip" v-if="!stageData.isInnerDone">
+                        <div class="b-card" v-for="(card) in stageData.cards.wip" v-else>
                             {{ card.cardId }}<br/>
                             {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
                         </div>
