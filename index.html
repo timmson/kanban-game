@@ -33,6 +33,45 @@
         span.info_negative {
             color: red;
         }
+
+        div.b-table {
+            border: 3px solid #ccc;
+            border-radius: 25px;
+            min-width: 900px;
+            width: 99%;
+            display: table;
+        }
+
+        div.b-column {
+            display: table-cell;
+            width: 1%;
+            border: 3px solid #f00;
+        }
+
+        div.b-header-row {
+            display: table-row;
+            height: 200px;
+        }
+
+        div.b-expedite-row {
+            display: table-row;
+            height: 150px;
+        }
+
+        div.b-regular-row {
+            display: table-row;
+            height: 600px;
+        }
+
+        div.b-card {
+            width: auto;
+            height: 100px;
+            border-radius: 15px;
+            margin: 5px;
+            padding: 10px;
+            border: 3px solid #ccc;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -77,6 +116,22 @@
             </div>
             <canvas height="1000" id="board" width="1700"></canvas>
                        <!--<h3 @click="toggles.isUtilOpen = !toggles.isUtilOpen" style="padding-left: 50px; cursor: pointer;">Utilization diagram</h3>-->
+            <div class="b-table">
+                <div class="b-header-row">
+                    <div class="b-column" v-for="(stageData, stageName) in stages">{{ stageName }}</div>
+                </div>
+                <div class="b-expedite-row">
+                    <div class="b-column" v-for="(stageData, stageName) in stages">&nbsp;</div>
+                </div>
+                <div class="b-regular-row">
+                    <div class="b-column" v-for="(stageData, stageName) in stages">
+                        <div class="b-card" v-for="(card) in stageData.cards">
+                            {{ card.cardId }}<br/>
+                            {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
+                        </div>
+                    </div>
+                </div>
+            </div>
             <h3 style="padding-left: 50px;">Utilization
                 <span id="utilInfo" v-bind:class="info.util.styleClass">[Utilization, %: {{info.util.value}} {{info.util.sign}}]</span>
             </h3>

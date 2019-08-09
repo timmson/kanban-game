@@ -68,7 +68,7 @@ let app = new Vue({
         stages: {
             ready: {
                 limit: 4,
-                isInnerDone: false
+                isInnerDone: false,
             },
             analysis: {
                 limit: 2,
@@ -142,6 +142,13 @@ let app = new Vue({
     },
     mounted() {
         this.construct();
+        let d = board.view().columns;
+        Object.keys(d).forEach(stageName => {
+            this.stages[stageName].cards = d[stageName].wip;
+        });
+        console.log(" 111111");
+        console.log(JSON.stringify(this.stages.ready));
+        this.$forceUpdate();
         draw();
     },
     updated() {
