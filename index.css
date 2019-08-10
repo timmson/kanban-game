@@ -52,133 +52,23 @@ span.info_negative {
     height: 100px;
 }
 
+.b-header2-row {
+    height: 50px;
+}
+
+.b-expedite-row {
+    height: 100px;
+}
+
+.b-regular-row {
+    height: 600px;
+}
+
 .b-column {
     margin: 0px;
     display: table-cell;
     border: 1px solid #ccc;
     width: 12%;
-}
-
-/*.b-table-top {
-    margin-top: 10px;
-    border-top: 3px solid #ccc;
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-}
-
-.b-header-row {
-    display: table-row;
-    height: 100px;
-}
-
-.b-header2-row {
-    display: table-row;
-    height: 50px;
-}
-
-.b-expedite-row {
-    display: table-row;
-    height: 150px;
-}
-
-.b-regular-row {
-    display: table-row;
-    height: 600px;
-}
-
-.b-column {
-    display: table-cell;
-    width: 12%;
-}
-
-.b-column-x2 {
-    display: table-cell;
-    width: 25%;
-}
-
-.b-column-double {
-    display: inline;
-    float: left;
-    width: 49%;
-}
-
-.b-header-row .b-column{
-
-}
-
-.b-header-row .b-column-x2 {
-    border-right: 1px solid #ccc;
-}
-
-
-
-.b-header-row .b-column:not(:last-child) {
-    border-right: 1px solid #ccc;
-}
-
-.b-header2-row .b-column {
-
-}
-
-.b-header2-row .b-column-x2 {
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-}
-
-.b-header2-row .b-column:not(:last-child) {
-    border-right: 1px solid #ccc;
-}
-
-.b-header2-row .b-column-double {
-    height: 50px;
-}
-
-.b-header2-row .b-column-double:first-of-type {
-    border-right: 1px dashed #ccc;
-}
-
-.b-expedite-row .b-column {
-    border-top: 1px solid #ccc;
-}
-
-.b-expedite-row .b-column-x2 {
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-}
-
-
-.b-expedite-row .b-column:not(:last-child) {
-    border-right: 1px solid #ccc;
-}
-
-.b-expedite-row .b-column-double {
-    height: 150px;
-}
-
-.b-expedite-row .b-column-double:first-of-type {
-    border-right: 1px dashed #ccc;
-}
-
-.b-regular-row .b-column {
-    border-top: 1px solid #ccc;
-    height: 600px;
-}
-
-.b-regular-row .b-column-x2 {
-    border-top: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-}
-
-.b-regular-row .b-column:not(:last-child) {
-    border-right: 1px solid #ccc;
-}
-
-.b-regular-row .b-column-double {
-    height: 600px;
-}
-
-.b-regular-row .b-column-double:first-of-type {
-    border-right: 1px dashed #ccc;
 }
 
 .b-card {
@@ -189,4 +79,4 @@ span.info_negative {
     padding: 10px;
     border: 3px solid #ccc;
     font-size: 20px;
-}*/
+}

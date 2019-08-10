@@ -115,7 +115,9 @@ let app = new Vue({
                     wip:[]
                 }
             }
-        }
+        },
+        stageNames: [
+        ]
     },
     methods: {
         construct: function () {
@@ -165,9 +167,11 @@ let app = new Vue({
         let d = board.view().columns;
         Object.keys(d).forEach(stageName => {
             this.stages[stageName].cards = d[stageName];
+            this.stageNames.push(stageName + ".wip");
+            if (this.stages[stageName].isInnerDone) {
+                this.stageNames.push(stageName + ".done");
+            }
         });
-        console.log(" 111111");
-        console.log(JSON.stringify(this.stages.ready));
         this.$forceUpdate();
         //draw();
     },

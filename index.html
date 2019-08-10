@@ -49,11 +49,14 @@
                 <tr class="b-header-row">
                     <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" v-for="(stageData, stageName) in stages">{{ stageName }}</td>
                 </tr>
-                <tr>
-                    <td class="b-column" v-for="(i) in 8">{{ i }}</td>
+                <tr class="b-header2-row">
+                    <td class="b-column" v-for="(stageName) in stageNames">{{ stageName }}</td>
                 </tr>
-                <tr>
-                    <td class="b-column" v-for="(i) in 8">{{ i }}</td>
+                <tr class="b-expedite-row">
+                    <td class="b-column" v-for="(stageName) in stageNames">&nbsp;</td>
+                </tr>
+                <tr class="b-regular-row">
+                    <td class="b-column" v-for="(stageName) in stageNames">{{ stageName }}</td>
                 </tr>
             </table>
             <div class="b-table b-table-top">
