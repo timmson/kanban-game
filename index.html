@@ -45,30 +45,41 @@
                     <input @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton" name="fullscreenButton" type="button" v-bind:value="fullscreenButton"/>
                 </div>
             </div>
-            <div class="b-table">
+            <table class="b-table b-table-top">
+                <tr class="b-header-row">
+                    <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" v-for="(stageData, stageName) in stages">{{ stageName }}</td>
+                </tr>
+                <tr>
+                    <td class="b-column" v-for="(i) in 8">{{ i }}</td>
+                </tr>
+                <tr>
+                    <td class="b-column" v-for="(i) in 8">{{ i }}</td>
+                </tr>
+            </table>
+            <div class="b-table b-table-top">
                 <div class="b-header-row">
-                    <div class="b-column" v-for="(stageData, stageName) in stages">{{ stageName }}</div>
+                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">{{ stageName }} 1111111111111111111111111111</div>
                 </div>
                 <div class="b-header2-row">
-                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
-                        <div class="b-column-double" v-if="stageData.isInnerDone">
-                            WIP
-                        </div>
-                        <div class="b-column-double" v-if="stageData.isInnerDone">
-                            Done
-                        </div>
+                    <div class="b-column" v-for="(i) in 8">
+                        &nbsp;
                     </div>
+                    <!--                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
+                                            <div class="b-column-double" v-if="stageData.isInnerDone">
+                                                WIP
+                                            </div>
+                                            <div class="b-column-double" v-if="stageData.isInnerDone">
+                                                Done
+                                            </div>
+                                        </div>-->
                 </div>
                 <div class="b-expedite-row">
-                    <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
-                        <div class="b-column-double" v-if="stageData.isInnerDone">
-                            &nbsp;
-                        </div>
-                        <div class="b-column-double" v-if="stageData.isInnerDone">
-                            &nbsp;
-                        </div>
+                    <div class="b-column" v-for="(i) in 8">
+                        &nbsp;
                     </div>
                 </div>
+            </div>
+            <div class="b-table">
                 <div class="b-regular-row">
                     <div :class="stageData.isInnerDone ? 'b-column-x2' : 'b-column'" v-for="(stageData, stageName) in stages">
                         <div class="b-column-double" v-if="stageData.isInnerDone">
@@ -83,7 +94,7 @@
                                 {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
                             </div>
                         </div>
-                        <div class="b-card" v-for="(card) in stageData.cards.wip" v-else>
+                        <div class="b-card" v-for="(card) in stageData.cards.wip" v-if="!stageData.isInnerDone">
                             {{ card.cardId }}<br/>
                             {{ card.estimations.analysis }} - {{card.estimations.development}} - {{card.estimations.testing}}
                         </div>

@@ -4,6 +4,11 @@ html, body {
     width: 100%;
 }
 
+table tr {
+    margin: 0px;
+    padding: 0px
+}
+
 .singleCell {
     display: table-cell;
     text-align: center;
@@ -41,7 +46,24 @@ span.info_negative {
     border-radius: 25px;
     min-width: 900px;
     width: 100%;
-    display: table;
+}
+
+.b-header-row {
+    height: 100px;
+}
+
+.b-column {
+    margin: 0px;
+    display: table-cell;
+    border: 1px solid #ccc;
+    width: 12%;
+}
+
+/*.b-table-top {
+    margin-top: 10px;
+    border-top: 3px solid #ccc;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
 }
 
 .b-header-row {
@@ -83,6 +105,12 @@ span.info_negative {
 .b-header-row .b-column{
 
 }
+
+.b-header-row .b-column-x2 {
+    border-right: 1px solid #ccc;
+}
+
+
 
 .b-header-row .b-column:not(:last-child) {
     border-right: 1px solid #ccc;
@@ -161,4 +189,4 @@ span.info_negative {
     padding: 10px;
     border: 3px solid #ccc;
     font-size: 20px;
-}
+}*/
