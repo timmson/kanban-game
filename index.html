@@ -47,10 +47,13 @@
             </div>
             <table class="b-table b-table-top">
                 <tr class="b-header-row">
-                    <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" v-for="(stageData, stageName) in stages">{{ stageName }}</td>
+                    <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" :rowspan="stageData.isInnerDone ? 1 : 2" v-for="(stageData, stageName) in stages">{{ stageName }}</td>
                 </tr>
                 <tr class="b-header2-row">
-                    <td class="b-column" v-for="(stageName) in stageNames">{{ stageName }}</td>
+                    <template v-for="(stageData, stageName) in stages">
+                        <td class="b-column" v-if="stageData.IsInnerDone">WIP</td>
+                        <td class="b-column" v-if="stageData.IsInnerDone">Done</td>
+                    </template>
                 </tr>
                 <tr class="b-expedite-row">
                     <td class="b-column" v-for="(stageName) in stageNames">&nbsp;</td>
