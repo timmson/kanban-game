@@ -99,25 +99,23 @@ let app = new Vue({
                 complexity: 3,
                 isInnerDone: false,
                 cards: {
-                    wip:[]
+                    wip: []
                 }
             },
             done: {
                 isInnerDone: false,
                 cards: {
-                    wip:[]
+                    wip: []
                 }
             },
             deployed: {
                 delay: 3,
                 isInnerDone: false,
                 cards: {
-                    wip:[]
+                    wip: []
                 }
             }
-        },
-        stageNames: [
-        ]
+        }
     },
     methods: {
         construct: function () {
@@ -135,16 +133,16 @@ let app = new Vue({
                 this.startToggle();
             }
             this.construct();
-            draw();
+            //draw();
         },
         startToggle: function (event) {
             isPlaying = !isPlaying;
             this.startButton = isPlaying ? "⏸" : "▶️";
-            draw();
+            this.tickDown();
         },
         handleResize: function (event) {
             if (!isPlaying && board !== null) {
-                draw();
+                this.tickDown();
             }
         },
         handleKey: function (event) {
@@ -155,6 +153,16 @@ let app = new Vue({
             } else if (event.keyCode === 82) {
                 this.reset(event);
             }
+        },
+        tickDown: function () {
+            let boardState = isPlaying ? board.turn() : board.view();
+            Object.keys(boardState.columns).forEach(stageName => {
+                this.stages[stageName].cards = boardState.columns[stageName];
+            });
+            this.$forceUpdate();
+            if (isPlaying) {
+                setTimeout(this.tickDown, 500);
+            }
         }
     },
     created() {
@@ -164,16 +172,7 @@ let app = new Vue({
     },
     mounted() {
         this.construct();
-        let d = board.view().columns;
-        Object.keys(d).forEach(stageName => {
-            this.stages[stageName].cards = d[stageName];
-            this.stageNames.push(stageName + ".wip");
-            if (this.stages[stageName].isInnerDone) {
-                this.stageNames.push(stageName + ".done");
-            }
-        });
-        this.$forceUpdate();
-        //draw();
+        this.tickDown();
     },
     updated() {
         config.stages = Object.keys(this.stages).map(key => {
