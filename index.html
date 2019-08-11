@@ -11,43 +11,6 @@
         <div class="whiteBack">
             <div style="display: table-row;">
                 <div class="singleCell">
-                    <label for="readyLimit">⚠&nbsp;</label>
-                    <input class="input_data" id="readyLimit" name="readyLimit" type="text"
-                           v-model="stages.ready.limit"/>
-                </div>
-                <div class="doubleCell">
-                    <label for="analysisDices">🎲&nbsp;</label>
-                    <input class="input_data" id="analysisDices" name="analysisDices" type="text"
-                           v-model="stages.analysis.diceCount"/>
-                    /
-                    <label for="analysisLimit">⚠&nbsp;</label>
-                    <input class="input_data" id="analysisLimit" name="analysisLimit" type="text"
-                           v-model="stages.analysis.limit"/>
-                </div>
-                <div class="doubleCell">
-                    <label for="developmentDices">🎲&nbsp;</label>
-                    <input class="input_data" id="developmentDices" name="developmentDices" type="text"
-                           v-model="stages.development.diceCount"/>
-                    /
-                    <label for="developmentLimit">⚠&nbsp;</label>
-                    <input class="input_data" id="developmentLimit" name="developmentLimit" type="text"
-                           v-model="stages.development.limit"/>
-                </div>
-                <div class="singleCell">
-                    <label for="testingDices">🎲&nbsp;</label>
-                    <input class="input_data" id="testingDices" name="testingDices" type="text"
-                           v-model="stages.testing.diceCount"/>
-                    /
-                    <label for="testingLimit">⚠&nbsp;</label>
-                    <input class="input_data" id="testingLimit" name="testingLimit" type="text"
-                           v-model="stages.testing.limit"/>
-                </div>
-                <div class="singleCell">
-                    <label for="deploymentDelay">⏳&nbsp;</label>
-                    <input class="input_data" id="deploymentDelay" name="deploymentDelay" type="text"
-                           v-model="stages.deployed.delay"/>
-                </div>
-                <div class="singleCell">
                     <input @click="startToggle" id="startButton" name="startButton" type="button"
                            v-bind:value="startButton"/>
                     <input @click="reset" id="resetButton" name="resetButton" type="button" v-bind:value="resetButton"/>
@@ -55,17 +18,21 @@
                            name="fullscreenButton" type="button" v-bind:value="fullscreenButton"/>
                 </div>
             </div>
-            <table class="b-table b-table-top">
+            <table class="b-table">
                 <tr class="b-header-row">
-                    <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1"
-                        :rowspan="stageData.isInnerDone ? 1 : 2" v-for="(stageData, stageName) in stages">{{ stageName
-                        }}
+                    <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" :rowspan="stageData.isInnerDone ? 1 : 2" v-for="(stageData, stageName) in stages">
+                        {{ stageName }}
+                        <template v-for="(config) in stageConfigs" v-if="stageData[config.name]">
+                            &nbsp;
+                            <label :for="stageName + config.name">{{ config.icon }}</label>
+                            <input class="input-data" :id="stageName + config.name" :name="stageName + config.name" type="text" v-model="stageData[config.name]"/>
+                        </template>
                     </td>
                 </tr>
                 <tr class="b-header2-row">
-                    <template v-for="(stageData) in stages">
-                        <td class="b-column" v-if="stageData.isInnerDone">WIP</td>
-                        <td class="b-column" v-if="stageData.isInnerDone">Done</td>
+                    <template v-for="(stageData, stageName) in stages">
+                        <td :class="'b-column b-' + stageName + ' b-wip'" v-if="stageData.isInnerDone">WIP</td>
+                        <td :class="'b-column b-' + stageName + ' b-done'" v-if="stageData.isInnerDone">Done</td>
                     </template>
                 </tr>
                 <tr class="b-expedite-row">
@@ -93,7 +60,8 @@
                     </template>
                 </tr>
             </table>
-            <a href="https://timmson.github.io/fruit-report/" style="padding-left: 50px;">Read more about these diagrams (on Russian)</a>
+            <a href="https://timmson.github.io/fruit-report/" style="padding-left: 50px;">Read more about these diagrams
+                (on Russian)</a>
         </div>
     </fullscreen>
 </div>

@@ -1,12 +1,13 @@
 html, body {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     width: 100%;
 }
 
-table tr {
-    margin: 0px;
-    padding: 0px
+table, tr, td {
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
 }
 
 .singleCell {
@@ -21,9 +22,9 @@ table tr {
     width: 398px;
 }
 
-.input_data {
-    font-size: 20pt;
-    width: 50px;
+.input-data {
+    font-size: 14px;
+    width: 30px;
     text-align: center;
 }
 
@@ -42,42 +43,89 @@ span.info_negative {
 
 .b-table {
     margin: 10px;
-    border: 3px solid #ccc;
-    border-radius: 25px;
+    /*border: 3px solid #ccc;
+    border-radius: 25px;*/
     min-width: 900px;
     width: 100%;
+}
+
+.b-column {
+    border-width: 0;
+    border-style: solid;
+    border-color: #ccc;
+    width: 12%;
+    vertical-align: top;
+}
+
+.b-analysis {
+    border-color: #ce1212;
+}
+
+.b-development {
+    border-color: #1266cf;
+}
+
+.b-card {
+    width: auto;
+    height: 50px;
+    border-radius: 15px;
+    margin: 5px;
+    padding: 10px;
+    border: 3px solid #ccc;
+    font-size: 14px;
 }
 
 .b-header-row {
     height: 100px;
 }
 
+.b-header-row .b-column {
+    border-top-width: 3px;
+    border-left-width: 3px;
+}
+
+.b-header-row .b-column:first-of-type {
+    border-top-left-radius: 25px;
+}
+
+.b-header-row .b-column:last-of-type {
+    border-top-right-radius: 25px;
+    border-right-width: 3px;
+}
+
 .b-header2-row {
     height: 50px;
+}
+
+.b-header2-row .b-column {
+    border-right-width: 0;
+    border-left-width: 3px;
+}
+
+.b-header2-row .b-wip {
+    border-left-color: #ccc;
+    border-top-width: 3px;
+}
+
+.b-header2-row .b-done {
+    border-top-width: 3px;
+    border-left-width: 3px;
+    border-left-style: dashed;
+
 }
 
 .b-expedite-row {
     height: 100px;
 }
 
+.b-expedite-row .b-column {
+
+}
+
 .b-regular-row {
     height: 600px;
 }
 
-.b-column {
-    margin: 0px;
-    display: table-cell;
-    border: 1px solid #ccc;
-    width: 12%;
-    vertical-align: top;
-}
+.b-regular-row .b-column {
 
-.b-card {
-    width: auto;
-    height: 100px;
-    border-radius: 15px;
-    margin: 5px;
-    padding: 10px;
-    border: 3px solid #ccc;
-    font-size: 20px;
 }

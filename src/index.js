@@ -65,6 +65,11 @@ let app = new Vue({
                 visible: false
             }
         },
+        stageConfigs: [
+            {name : "limit", icon: "⚠"},
+            {name: "diceCount", icon: "🎲"},
+            {name: "delay", icon: "⏳"}
+        ],
         stages: {
             ready: {
                 limit: 4,
