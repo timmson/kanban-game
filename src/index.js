@@ -161,7 +161,7 @@ let app = new Vue({
             });
             this.$forceUpdate();
             if (isPlaying) {
-                setTimeout(this.tickDown, 500);
+                setTimeout(this.tickDown, 1000);
             }
         }
     },

@@ -69,6 +69,7 @@ span.info_negative {
     display: table-cell;
     border: 1px solid #ccc;
     width: 12%;
+    vertical-align: top;
 }
 
 .b-card {
