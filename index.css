@@ -57,12 +57,24 @@ span.info_negative {
     vertical-align: top;
 }
 
+.b-ready {
+    border-color: #b800dd;
+}
+
 .b-analysis {
     border-color: #ce1212;
 }
 
 .b-development {
     border-color: #1266cf;
+}
+
+.b-done {
+    border-color: #008100;
+}
+
+.b-deployed {
+    border-color: #000;
 }
 
 .b-card {
@@ -105,13 +117,13 @@ span.info_negative {
 .b-header2-row .b-wip {
     border-left-color: #ccc;
     border-top-width: 3px;
+    border-top-style: dashed;
 }
 
-.b-header2-row .b-done {
+.b-header2-row .b-inner-done {
     border-top-width: 3px;
+    border-top-style: dashed;
     border-left-width: 3px;
-    border-left-style: dashed;
-
 }
 
 .b-expedite-row {
@@ -119,13 +131,35 @@ span.info_negative {
 }
 
 .b-expedite-row .b-column {
+    border-top-width: 3px;
+    border-top-color: #ccc;
+    border-left-width: 3px;
 
+}
+
+.b-expedite-row .b-column:last-of-type {
+    border-right-color: #ccc;
+    border-right-width: 3px;
 }
 
 .b-regular-row {
     height: 600px;
 }
 
-.b-regular-row .b-column {
+.b-regular-row .b-column:first-of-type {
+    border-bottom-left-radius: 25px;
+}
 
+.b-regular-row .b-column {
+    border-top-width: 3px;
+    border-top-color: #ccc;
+    border-left-width: 3px;
+    border-bottom-color: #ccc;
+    border-bottom-width: 3px;
+}
+
+.b-regular-row .b-column:last-of-type {
+    border-right-color: #ccc;
+    border-right-width: 3px;
+    border-bottom-right-radius: 25px;
 }
