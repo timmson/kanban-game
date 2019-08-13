@@ -43,37 +43,12 @@
                 </tr>
                 <tr class="b-regular-row">
                     <template v-for="(stageData, stageName) in stages">
-                        <template v-if="stageData.isInnerDone">
-                            <td class="b-column" v-if="stageData.isInnerDone">
-                                <div class="b-card" v-for="(card) in stageData.cards.wip">
-                                    {{ card.cardId }}<br/>
-                                    {{ card.estimations.analysis }} - {{ card.estimations.development }} - {{ card.estimations.testing }}
-                                </div>
-                            </td>
-                            <td :class="'b-column b-'+ stageName">
-                                <div class="b-card" v-for="(card) in stageData.cards.done">
-                                    {{ card.cardId }}<br/>
-                                    {{ card.estimations.analysis }} - {{ card.estimations.development }} -
-                                    {{ card.estimations.testing }}
-                                </div>
-                            </td>
-                        </template>
-                        <template v-else>
-                            <td :class="'b-column b-'+ stageName">
-                                <table class="b-card" v-for="(card) in stageData.cards.wip">
-                                    <tr>
-                                        <td>
-                                            {{ card.cardId }}
-                                        </td>
-                                    </tr>
-                                    <tr v-for="(estimationData, estimationName) in card.estimations">
-                                        <td>
-                                            <div v-for="(i) in estimationData" :class="'b-'+estimationName + ' b-estimation'"></div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </template>
+                        <td class="b-column" v-if="stageData.isInnerDone">
+                            <b-cards :cards="stageData.cards.wip"></b-cards>
+                        </td>
+                        <td :class="'b-column b-'+ stageName">
+                            <b-cards :cards="stageData.isInnerDone ? stageData.cards.done : stageData.cards.wip"></b-cards>
+                        </td>
                     </template>
                 </tr>
             </table>

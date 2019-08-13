@@ -68,9 +68,18 @@ span.info_negative {
     float: left
 }
 
-.b-burned {
-    background: #ccc;
+.b-burned-analysis {
+    background: #ce1212;
 }
+
+.b-burned-development {
+    background: #1266cf;
+}
+
+.b-burned-testing {
+    background: #008100;
+}
+
 
 .b-ready {
     border-color: #b800dd;

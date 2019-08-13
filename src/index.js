@@ -29,6 +29,26 @@ let config = {};
 let board = null;
 let tracing = [];
 
+Vue.component("b-cards", {
+   props: ["cards"],
+   template: "<div><b-card :card=\"card\" v-for=\"(card) in cards\"></b-card></div>"
+});
+
+Vue.component("b-card", {
+    props: ["card"],
+    template: "<table class=\"b-card\">" +
+        "<tr><td v-html=\"card.cardId\"></td></tr>" +
+        "<tr v-for=\"(estimation, stage) in card.estimations\"><td><template v-for=\"(i) in estimation\">" +
+        "<b-estimation :stage=\"stage\" :burned=\"i <= estimation - card.remainings[stage]\"></b-estimation>" +
+        "</template></td></tr>" +
+        "</table>"
+});
+
+Vue.component("b-estimation", {
+   props: ["stage", "burned"],
+   template: "<div :class=\"'b-'+stage + ' b-estimation' + (burned ? ' b-burned-' +  stage: '' )\"></div>"
+});
+
 Vue.use(VueFullscreen);
 let app = new Vue({
     el: "#app",
@@ -66,7 +86,7 @@ let app = new Vue({
             }
         },
         stageConfigs: [
-            {name : "limit", icon: "⚠"},
+            {name: "limit", icon: "⚠"},
             {name: "diceCount", icon: "🎲"},
             {name: "delay", icon: "⏳"}
         ],
