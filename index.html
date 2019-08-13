@@ -47,8 +47,7 @@
                             <td class="b-column" v-if="stageData.isInnerDone">
                                 <div class="b-card" v-for="(card) in stageData.cards.wip">
                                     {{ card.cardId }}<br/>
-                                    {{ card.estimations.analysis }} - {{ card.estimations.development }} -
-                                    {{ card.estimations.testing }}
+                                    {{ card.estimations.analysis }} - {{ card.estimations.development }} - {{ card.estimations.testing }}
                                 </div>
                             </td>
                             <td :class="'b-column b-'+ stageName">
@@ -61,11 +60,18 @@
                         </template>
                         <template v-else>
                             <td :class="'b-column b-'+ stageName">
-                                <div class="b-card" v-for="(card) in stageData.cards.wip">
-                                    {{ card.cardId }}<br/>
-                                    {{ card.estimations.analysis }} - {{ card.estimations.development }} -
-                                    {{ card.estimations.testing }}
-                                </div>
+                                <table class="b-card" v-for="(card) in stageData.cards.wip">
+                                    <tr>
+                                        <td>
+                                            {{ card.cardId }}
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(estimationData, estimationName) in card.estimations">
+                                        <td>
+                                            <div v-for="(i) in estimationData" :class="'b-'+estimationName + ' b-estimation'"></div>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </template>
                     </template>

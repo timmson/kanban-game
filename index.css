@@ -57,6 +57,21 @@ span.info_negative {
     vertical-align: top;
 }
 
+.b-estimation {
+    margin: 1px;
+    width: 6px;
+    height: 6px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    /*display: block;*/
+    float: left
+}
+
+.b-burned {
+    background: #ccc;
+}
+
 .b-ready {
     border-color: #b800dd;
 }
@@ -78,7 +93,7 @@ span.info_negative {
 }
 
 .b-card {
-    width: auto;
+    width: 95%;
     height: 50px;
     border-radius: 15px;
     margin: 5px;
