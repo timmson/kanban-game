@@ -1,3 +1,7 @@
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.css";
+
 import Vue from "vue";
 import VueFullscreen from "vue-fullscreen";
 import $ from "jquery";

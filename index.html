@@ -11,11 +11,9 @@
         <div class="whiteBack">
             <div style="display: table-row;">
                 <div class="singleCell">
-                    <input @click="startToggle" id="startButton" name="startButton" type="button"
-                           v-bind:value="startButton"/>
-                    <input @click="reset" id="resetButton" name="resetButton" type="button" v-bind:value="resetButton"/>
-                    <input @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton"
-                           name="fullscreenButton" type="button" v-bind:value="fullscreenButton"/>
+                    <input @click="startToggle" id="startButton" name="startButton" type="button" class="btn-success" :value="startButton"/>
+                    <input @click="reset" id="resetButton" name="resetButton" type="button" class="btn-secondary" :value="resetButton"/>
+                    <input @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton" name="fullscreenButton" type="button" class="btn-secondary" :value="fullscreenButton"/>
                 </div>
             </div>
             <table class="b-table">
@@ -25,7 +23,7 @@
                         <template v-for="(config) in stageConfigs" v-if="stageData[config.name]">
                             &nbsp;
                             <label :for="stageName + config.name">{{ config.icon }}</label>
-                            <input class="input-data" :id="stageName + config.name" :name="stageName + config.name" type="text" v-model="stageData[config.name]"/>
+                            <input class="form-control" :id="stageName + config.name" :name="stageName + config.name" type="text" v-model="stageData[config.name]"/>
                         </template>
                     </td>
                 </tr>
@@ -57,6 +55,6 @@
         </div>
     </fullscreen>
 </div>
-<script src="main.js" type="application/javascript"></script>
+<script src="index.js" type="application/javascript"></script>
 </body>
 </html>
