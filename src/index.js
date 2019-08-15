@@ -65,24 +65,32 @@ let app = new Vue({
         },
         info: {
             util: {
+                name: "Utilization",
+                description: "Utilization, %",
                 styleClass: "info_positive",
                 sign: "",
                 value: 0,
                 visible: false
             },
             cfd: {
+                name: "Cumulative flow diagram",
+                description: "How many issues is in progress",
                 styleClass: "info_positive",
                 sign: "",
                 value: 0,
                 visible: false
             },
             cc: {
+                name: "Control Chart",
+                description: "Average issue cycleTime",
                 styleClass: "info_positive",
                 sign: "",
                 value: 0,
                 visible: false
             },
             dd: {
+                name: "Distribution diagram",
+                description: "85 percentile",
                 styleClass: "info_positive",
                 sign: "",
                 value: 0,
@@ -160,6 +168,9 @@ let app = new Vue({
             });
             board = new Board(config);
         },
+        about: function() {
+            return window.open('https://timmson.github.io');
+        },
         reset: function (event) {
             if (isPlaying) {
                 this.startToggle();
@@ -197,7 +208,7 @@ let app = new Vue({
             }
         },
         draw: function () {
-            widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
+            widthCanvas = window.innerWidth * 0.33,//Math.max(window.innerWidth * 0.25, minWidthCanvas);
             widthBoard = widthCanvas - 2 * shiftX;
             heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
             heightBoard = heightCanvas - 2 * shiftY;
@@ -205,8 +216,8 @@ let app = new Vue({
             $("canvas").attr("height", heightCanvas);
             //drawUtil(null, this.boardData);
             drawCFD(document.getElementById("cfd").getContext("2d"), this.boardData);
-            drawCFD(document.getElementById("cc").getContext("2d"), this.boardData);
-            drawCFD(document.getElementById("dd").getContext("2d"), this.boardData);
+            drawCC(document.getElementById("cc").getContext("2d"), this.boardData);
+            drawDD(document.getElementById("dd").getContext("2d"), this.boardData);
         }
     },
     created() {
@@ -232,31 +243,6 @@ let app = new Vue({
         window.removeEventListener("keyup", this.handleKey)
     }
 });
-
-/*function draw() {
-    widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
-    widthBoard = widthCanvas - 2 * shiftX;
-    heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
-    heightBoard = heightCanvas - 2 * shiftY;
-    $("canvas").attr("width", widthCanvas);
-    $("canvas").attr("height", heightCanvas);
-
-    let cfdCanvas = $("cfd");
-    let ccCanvas = $("cc");
-    let ddCanvas = $("dd");
-    if (boardCanvas.getContext) {
-        let data = isPlaying ? board.turn() : board.view();
-        drawUtil(null, data);
-        drawCFD(cfdCanvas.getContext("2d"), data);
-        drawCC(ccCanvas.getContext("2d"), data);
-        drawDD(ddCanvas.getContext("2d"), data);
-
-        if (isPlaying) {
-            setTimeout(draw, 500);
-        }
-
-    }
-}*/
 
 function drawUtil(ctx, data) {
     app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis + "% ,🧔🏻 - " + data.currentDayUtilization.development + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing + "%";

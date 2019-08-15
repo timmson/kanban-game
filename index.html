@@ -59,35 +59,36 @@
                         <tr class="b-regular-row">
                             <template v-for="(stageData, stageName) in stages">
                                 <td class="b-column" v-if="stageData.isInnerDone">
-                                    <b-cards :cards="stageData.cards.wip"></b-cards>
+                                    <b-cards :cards="stageData.cards.wip.slice(-10)"></b-cards>
                                 </td>
                                 <td :class="'b-column b-'+ stageName">
-                                    <b-cards :cards="stageData.isInnerDone ? stageData.cards.done : stageData.cards.wip"></b-cards>
+                                    <b-cards :cards="stageData.isInnerDone ? stageData.cards.done.slice(-10) : stageData.cards.wip.slice(-10)"></b-cards>
                                 </td>
                             </template>
                         </tr>
                     </table>
                 </div>
             </div>
-            <div class="row">
+            <div class="row pl-3">
                 <div class="col">
-                    <canvas id="cfd"></canvas>
+                    <h6>Utilization <span id="utilInfo" :class="info.util.styleClass">[{{info.util.description}}: {{info.util.value}} {{info.util.sign}}]</span></h6>
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <canvas id="cc"></canvas>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <canvas id="dd"></canvas>
+            <div class="row pl-3">
+                <div class="col-4" v-for="(diagramData, diagramName) in info"  v-if="diagramName!=='util'">
+                    <h6 @click="diagramData.visible = !diagramData.visible" style=" cursor: pointer;">
+                        {{diagramData.name}}
+                        <span :id="diagramName + 'Info'" :class="diagramData.styleClass">[{{diagramData.description}}: {{diagramData.value}} {{diagramData.sign}}]</span>
+                    </h6>
+                    <div v-show="diagramData.visible">
+                        <canvas :id="diagramName"></canvas>
+                    </div>
                 </div>
             </div>
             <div class="navbar navbar-expand navbar-dark bg-dark">
                 <ul class="navbar-nav ml-auto mr-3">
                     <li class="nav-item">
-                        <a class="text-light" href="https://timmson.github.io">timmson &copy; 2019</a>
+                        <h6 class="text-light" @click="about" style="cursor: pointer;">timmson &copy; 2019</h6>
                     </li>
                 </ul>
             </div>
