@@ -15,6 +15,4 @@ webpack
 
 
 ## Images
-![game1](https://raw.githubusercontent.com/timmson/kanban-game/master/game1.png)
-
-![game2](https://raw.githubusercontent.com/timmson/kanban-game/master/game2.png)
+![game](https://raw.githubusercontent.com/timmson/kanban-game/master/game.png)
