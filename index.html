@@ -6,52 +6,91 @@
     <link rel="stylesheet" href="index.css"/>
 </head>
 <body>
-<div id="app" style="display: table; width: 99%">
+<div id="app">
     <fullscreen :fullscreen.sync="toggles.isFullscreen" ref="fullscreen">
-        <div class="whiteBack">
-            <div style="display: table-row;">
-                <div class="singleCell">
-                    <input @click="startToggle" id="startButton" name="startButton" type="button" class="btn-success" :value="startButton"/>
-                    <input @click="reset" id="resetButton" name="resetButton" type="button" class="btn-secondary" :value="resetButton"/>
-                    <input @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton" name="fullscreenButton" type="button" class="btn-secondary" :value="fullscreenButton"/>
+        <div class="container-fluid bg-white pl-0 pr-0">
+            <div class="navbar navbar-expand navbar-dark bg-dark">
+                <ul class="navbar-nav ml-auto mr-3">
+                    <li class="nav-item">
+                        <a href="#" @click="startToggle" id="startButton" v-html="startButton"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" @click="reset" id="resetButton" v-html="resetButton"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" @click="toggles.isFullscreen = !toggles.isFullscreen" id="fullscreenButton" v-html="fullscreenButton"></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col pl-0 pr-0">
+                    <table class="b-table mt-2 mb-2 ml-auto mr-auto">
+                        <tr class="b-header-row">
+                            <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" :rowspan="stageData.isInnerDone ? 1 : 2" v-for="(stageData, stageName) in stages">
+                                <div class="row mb-4">
+                                    <div class="col text-center font-weight-bold" v-html="stageName"></div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col"></div>
+                                    <template v-for="(config) in stageConfigs" v-if="stageData[config.name]">
+                                        <div class="col-1 text-center">
+                                            {{ config.icon }}
+                                        </div>
+                                        <div class="col-3 text-center">
+                                            <input class="form-control" :id="stageName + config.name" :name="stageName + config.name" type="text" v-model="stageData[config.name]"/>
+                                        </div>
+                                    </template>
+                                    <div class="col"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="b-header2-row">
+                            <template v-for="(stageData, stageName) in stages">
+                                <td :class="'b-column b-' + stageName + ' b-wip text-center align-middle'" v-if="stageData.isInnerDone">WIP</td>
+                                <td :class="'b-column b-' + stageName + ' b-inner-done text-center align-middle'" v-if="stageData.isInnerDone">Done</td>
+                            </template>
+                        </tr>
+                        <tr class="b-expedite-row">
+                            <template v-for="(stageData, stageName) in stages">
+                                <td class="b-column" v-if="stageData.isInnerDone">&nbsp;</td>
+                                <td :class="'b-column b-'+ stageName">&nbsp;</td>
+                            </template>
+                        </tr>
+                        <tr class="b-regular-row">
+                            <template v-for="(stageData, stageName) in stages">
+                                <td class="b-column" v-if="stageData.isInnerDone">
+                                    <b-cards :cards="stageData.cards.wip"></b-cards>
+                                </td>
+                                <td :class="'b-column b-'+ stageName">
+                                    <b-cards :cards="stageData.isInnerDone ? stageData.cards.done : stageData.cards.wip"></b-cards>
+                                </td>
+                            </template>
+                        </tr>
+                    </table>
                 </div>
             </div>
-            <table class="b-table">
-                <tr class="b-header-row">
-                    <td class="b-column" :colspan="stageData.isInnerDone ? 2 : 1" :rowspan="stageData.isInnerDone ? 1 : 2" v-for="(stageData, stageName) in stages">
-                        {{ stageName }}
-                        <template v-for="(config) in stageConfigs" v-if="stageData[config.name]">
-                            &nbsp;
-                            <label :for="stageName + config.name">{{ config.icon }}</label>
-                            <input class="form-control" :id="stageName + config.name" :name="stageName + config.name" type="text" v-model="stageData[config.name]"/>
-                        </template>
-                    </td>
-                </tr>
-                <tr class="b-header2-row">
-                    <template v-for="(stageData, stageName) in stages">
-                        <td :class="'b-column b-' + stageName + ' b-wip'" v-if="stageData.isInnerDone">WIP</td>
-                        <td :class="'b-column b-' + stageName + ' b-inner-done'" v-if="stageData.isInnerDone">Done</td>
-                    </template>
-                </tr>
-                <tr class="b-expedite-row">
-                    <template v-for="(stageData, stageName) in stages">
-                        <td class="b-column" v-if="stageData.isInnerDone">&nbsp;</td>
-                        <td :class="'b-column b-'+ stageName">&nbsp;</td>
-                    </template>
-                </tr>
-                <tr class="b-regular-row">
-                    <template v-for="(stageData, stageName) in stages">
-                        <td class="b-column" v-if="stageData.isInnerDone">
-                            <b-cards :cards="stageData.cards.wip"></b-cards>
-                        </td>
-                        <td :class="'b-column b-'+ stageName">
-                            <b-cards :cards="stageData.isInnerDone ? stageData.cards.done : stageData.cards.wip"></b-cards>
-                        </td>
-                    </template>
-                </tr>
-            </table>
-            <a href="https://timmson.github.io/fruit-report/" style="padding-left: 50px;">Read more about these diagrams
-                (on Russian)</a>
+            <div class="row">
+                <div class="col">
+                    <canvas id="cfd"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <canvas id="cc"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <canvas id="dd"></canvas>
+                </div>
+            </div>
+            <div class="navbar navbar-expand navbar-dark bg-dark">
+                <ul class="navbar-nav ml-auto mr-3">
+                    <li class="nav-item">
+                        <a class="text-light" href="https://timmson.github.io">timmson &copy; 2019</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </fullscreen>
 </div>

@@ -57,7 +57,7 @@ Vue.use(VueFullscreen);
 let app = new Vue({
     el: "#app",
     data: {
-        startButton: "▶️",
+        startButton: "▶",
         resetButton: "🔄",
         fullscreenButton: "🎦",
         toggles: {
@@ -144,6 +144,9 @@ let app = new Vue({
                     wip: []
                 }
             }
+        },
+        boardData : {
+
         }
     },
     methods: {
@@ -162,11 +165,10 @@ let app = new Vue({
                 this.startToggle();
             }
             this.construct();
-            //draw();
         },
         startToggle: function (event) {
             isPlaying = !isPlaying;
-            this.startButton = isPlaying ? "⏸" : "▶️";
+            this.startButton = isPlaying ? "⏸" : "▶";
             this.tickDown();
         },
         handleResize: function (event) {
@@ -184,14 +186,27 @@ let app = new Vue({
             }
         },
         tickDown: function () {
-            let boardState = isPlaying ? board.turn() : board.view();
-            Object.keys(boardState.columns).forEach(stageName => {
-                this.stages[stageName].cards = boardState.columns[stageName];
+            this.boardData = isPlaying ? board.turn() : board.view();
+            Object.keys(this.boardData.columns).forEach(stageName => {
+                this.stages[stageName].cards = this.boardData.columns[stageName];
             });
             this.$forceUpdate();
+            this.draw();
             if (isPlaying) {
                 setTimeout(this.tickDown, 1000);
             }
+        },
+        draw: function () {
+            widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
+            widthBoard = widthCanvas - 2 * shiftX;
+            heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
+            heightBoard = heightCanvas - 2 * shiftY;
+            $("canvas").attr("width", widthCanvas);
+            $("canvas").attr("height", heightCanvas);
+            //drawUtil(null, this.boardData);
+            drawCFD(document.getElementById("cfd").getContext("2d"), this.boardData);
+            drawCFD(document.getElementById("cc").getContext("2d"), this.boardData);
+            drawCFD(document.getElementById("dd").getContext("2d"), this.boardData);
         }
     },
     created() {
@@ -218,25 +233,19 @@ let app = new Vue({
     }
 });
 
-function draw() {
+/*function draw() {
     widthCanvas = Math.max(window.innerWidth * 0.99, minWidthCanvas);
     widthBoard = widthCanvas - 2 * shiftX;
     heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
     heightBoard = heightCanvas - 2 * shiftY;
     $("canvas").attr("width", widthCanvas);
     $("canvas").attr("height", heightCanvas);
-    $(".singleCell").css("width", widthCanvas / 8);
-    $(".doubleCell").css("width", widthCanvas / 4);
-    $(".input_data").css("width", widthCanvas / 45);
-    $(".input_data").css("font-size", parseInt(heightBoard / 60) + "px");
 
-    let boardCanvas = document.getElementById("board");
-    let cfdCanvas = document.getElementById("cfd");
-    let ccCanvas = document.getElementById("cc");
-    let ddCanvas = document.getElementById("dd");
+    let cfdCanvas = $("cfd");
+    let ccCanvas = $("cc");
+    let ddCanvas = $("dd");
     if (boardCanvas.getContext) {
         let data = isPlaying ? board.turn() : board.view();
-        drawBoard(boardCanvas.getContext("2d"), data);
         drawUtil(null, data);
         drawCFD(cfdCanvas.getContext("2d"), data);
         drawCC(ccCanvas.getContext("2d"), data);
@@ -247,132 +256,16 @@ function draw() {
         }
 
     }
-}
+}*/
 
-function drawBoard(ctx, data) {
-    ctx.clearRect(0, 0, widthBoard, heightBoard);
-
-    let spec = {
-        "laneWidth": widthBoard / 8,
-        "laneHeight": heightBoard * 0.1,
-        "columnLabelLevel": heightBoard * 0.03,
-        "wipLabelLevelDouble": heightBoard * 0.06,
-        "wipLabelLevelSingle": heightBoard * 0.08,
-        "wipLabelHeight": heightBoard * 0.04,
-        "dashedLevel": heightBoard * 0.12,
-        "dashedLabelLevel": heightBoard * 0.15,
-        "expediteLaneLevel": heightBoard * 0.18,
-        "standardLaneLevel": heightBoard * 0.3,
-    };
-    //Lanes
-    ctx.lineWidth = 3;
-    let radius = 25;
-
-
-    rr(ctx, shiftX, shiftY, widthBoard + shiftX, heightBoard + shiftY, radius, colors.border, [1, 0]);
-    rr(ctx, shiftX, spec.expediteLaneLevel + shiftY, widthBoard + shiftX, spec.standardLaneLevel + shiftY, 0, colors.border, [1, 0]);
-
-
-    ln(ctx, shiftX, shiftY + radius, shiftX, heightBoard - radius + shiftY, colors.ready, [1, 0]);
-    rr(ctx, spec.laneWidth * 0.30 + shiftX, spec.wipLabelLevelSingle + shiftY, spec.laneWidth * 0.70 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight + shiftY, 5, colors.ready, [1, 0]);
-
-    ln(ctx, spec.laneWidth + shiftX, shiftY, spec.laneWidth + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
-
-    ln(ctx, spec.laneWidth * 2 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 2 + shiftX, heightBoard + shiftY, colors.analysis, [1, 0]);
-    ln(ctx, spec.laneWidth + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 3 + shiftX, spec.dashedLevel + shiftY, colors.analysis, [20, 5]);
-    rr(ctx, spec.laneWidth * 1.80 + shiftX, spec.wipLabelLevelDouble + shiftY, spec.laneWidth * 2.20 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight + shiftY, 5, colors.analysis, [1, 0]);
-
-    ln(ctx, spec.laneWidth * 3 + shiftX, shiftY, spec.laneWidth * 3 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
-
-    ln(ctx, spec.laneWidth * 4 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 4 + shiftX, heightBoard + shiftY, colors.development, [1, 0]);
-    ln(ctx, spec.laneWidth * 3 + shiftX, spec.dashedLevel + shiftY, spec.laneWidth * 5 + shiftX, spec.dashedLevel + shiftY, colors.development, [20, 5]);
-    rr(ctx, spec.laneWidth * 3.80 + shiftX, spec.wipLabelLevelDouble + shiftY, spec.laneWidth * 4.20 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight + shiftY, 5, colors.development, [1, 0]);
-
-    ln(ctx, spec.laneWidth * 5 + shiftX, shiftY, spec.laneWidth * 5 + shiftX, heightBoard + shiftY, colors.border, [1, 0]);
-
-    ln(ctx, spec.laneWidth * 6 + shiftX, shiftY, spec.laneWidth * 6 + shiftX, heightBoard + shiftY, colors.testing, [1, 0]);
-    rr(ctx, spec.laneWidth * 5.30 + shiftX, spec.wipLabelLevelSingle + shiftY, spec.laneWidth * 5.70 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight + shiftY, 5, colors.testing, [1, 0]);
-
-    ln(ctx, spec.laneWidth * 7 + shiftX, shiftY, spec.laneWidth * 7 + shiftX, heightBoard + shiftY, colors.deployed, [1, 0]);
-
-
-    //Labels
-    columnLabel(ctx, spec.laneWidth * 0.40 + shiftX, shiftY + spec.columnLabelLevel, colors.ready, "Ready");
-    columnLabel(ctx, spec.laneWidth * 1.70 + shiftX, shiftY + spec.columnLabelLevel, colors.analysis, "Analysis, " + config.stages.filter(stage => stage.name === "analysis")[0].diceCount + " x 👩🏻‍🦰");
-    columnLabel(ctx, spec.laneWidth * 3.70 + shiftX, shiftY + spec.columnLabelLevel, colors.development, "Development, " + config.stages.filter(stage => stage.name === "development")[0].diceCount + " x 🧔🏻");
-    columnLabel(ctx, spec.laneWidth * 5.20 + shiftX, shiftY + spec.columnLabelLevel, colors.testing, "Testing, " + config.stages.filter(stage => stage.name === "testing")[0].diceCount + " x 👱🏽‍♀");
-    columnLabel(ctx, spec.laneWidth * 6.35 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Done");
-    minorLabel(ctx, spec.laneWidth * 6.30 + shiftX, shiftY + spec.wipLabelLevelSingle * 1.5, colors.text, "🎁 every " + config.stages.filter(stage => stage.name === "deployed")[0].delay + " days");
-    columnLabel(ctx, spec.laneWidth * 7.30 + shiftX, shiftY + spec.columnLabelLevel, colors.text, "Deployed");
-
-    //Minor labels
-    minorLabel(ctx, spec.laneWidth * 1.25 + shiftX, spec.dashedLabelLevel + shiftY, colors.analysis, "In Progress");
-    minorLabel(ctx, spec.laneWidth * 2.40 + shiftX, spec.dashedLabelLevel + shiftY, colors.analysis, "Done");
-    minorLabel(ctx, spec.laneWidth * 3.25 + shiftX, spec.dashedLabelLevel + shiftY, colors.development, "In Progress");
-    minorLabel(ctx, spec.laneWidth * 4.40 + shiftX, spec.dashedLabelLevel + shiftY, colors.development, "Done");
-
-
-    //Limits
-    wipLimitLabel(ctx, spec.laneWidth * 0.45 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "ready")[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 1.98 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "analysis")[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 3.98 + shiftX, spec.wipLabelLevelDouble + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "development")[0].limit);
-    wipLimitLabel(ctx, spec.laneWidth * 5.45 + shiftX, spec.wipLabelLevelSingle + spec.wipLabelHeight * 1.1, config.stages.filter(stage => stage.name === "testing")[0].limit);
-
-    //dices
-    let allCards = [
-        data.columns.ready.wip,
-        data.columns.analysis.wip,
-        data.columns.analysis.done,
-        data.columns.development.wip,
-        data.columns.development.done,
-        data.columns.testing.wip,
-        data.columns.done.wip,
-        data.columns.deployed.wip.slice(data.columns.deployed.wip.length - 6, data.columns.deployed.wip.length),
-    ];
-    for (let i = 0; i < allCards.length; i++) {
-        for (let j = 0; j < allCards[i].length; j++) {
-            drawCard(ctx, spec.laneWidth, spec.laneHeight, spec.standardLaneLevel, i, j, allCards[i][j])
-        }
-    }
-}
-
-function drawCard(ctx, laneWidth, laneHeight, laneLevel, i, j, card) {
-    let padding = 10;
-    rr(ctx, laneWidth * i + padding + shiftX, laneLevel + laneHeight * j + padding + shiftY, laneWidth * (i + 1) - padding + shiftX, laneLevel + laneHeight * (j + 1) + shiftY,
-        5, colors.cardBorder, [1, 0]);
-
-    ctx.font = parseInt(heightBoard / 50) + "px Arial";
-    ctx.fillStyle = colors.text;
-    ctx.fillText("📄 " + card.cardId, laneWidth * i + padding + shiftX + 5, laneLevel + laneHeight * j + padding + shiftY + heightBoard / 45);
-
-    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 2 * heightBoard / 55,
-        heightBoard / 250, colors.analysis, card.estimations.analysis - card.remainings.analysis, card.estimations.analysis);
-    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 3 * heightBoard / 55,
-        heightBoard / 250, colors.development, card.estimations.development - card.remainings.development, card.estimations.development);
-    ca(ctx, laneWidth * i + padding + shiftX + 10, laneLevel + laneHeight * j + padding + shiftY + 4 * heightBoard / 55,
-        heightBoard / 250, colors.testing, card.estimations.testing - card.remainings.testing, card.estimations.testing);
-}
-
-function minorLabel(ctx, x, y, color, value) {
-    return drawLabel(ctx, x, y, parseInt(heightBoard / 50) + "px Arial", color, value);
-}
-
-function columnLabel(ctx, x, y, color, value) {
-    return drawLabel(ctx, x, y, parseInt(heightBoard / 40) + "px Arial", color, value);
-}
-
-function wipLimitLabel(ctx, x, y, value) {
-    return drawLabel(ctx, x, y, parseInt(heightBoard / 30) + "px Arial", colors.text, value);
+function drawUtil(ctx, data) {
+    app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis + "% ,🧔🏻 - " + data.currentDayUtilization.development + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing + "%";
 }
 
 function drawLabel(ctx, x, y, font, color, value) {
     ctx.font = font;
     ctx.fillStyle = color;
     ctx.fillText(value, x, y);
-}
-
-function drawUtil(ctx, data) {
-    app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis + "% ,🧔🏻 - " + data.currentDayUtilization.development + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing + "%";
 }
 
 function drawCFD(ctx, data) {
@@ -561,16 +454,16 @@ function drawDD(ctx, data) {
             ln(ctx, peek.x, heightBoard - spec.cellGridCount * spec.cellWidth, peek.x, peek.y, colors.development, [20, 5]);
         });
 
-        let perentile = 0;
+        let percentil = 0;
         let cnt = 0;
         let border = 0.85;
 
         while ((cnt / cycleTime.length) <= border) {
-            cnt = cycleTime.filter(t => t < perentile).length;
-            perentile++;
+            cnt = cycleTime.filter(t => t < percentil).length;
+            percentil++;
         }
 
-        if (perentile > app.info.dd.value) {
+        if (percentil > app.info.dd.value) {
             app.info.dd.styleClass = "info_negative";
             app.info.dd.sign = "⬆️";
         } else {
@@ -578,7 +471,7 @@ function drawDD(ctx, data) {
             app.info.dd.sign = "⬇️";
         }
 
-        app.info.dd.value = perentile;
+        app.info.dd.value = percentil;
     }
 }
 

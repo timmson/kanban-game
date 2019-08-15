@@ -17,6 +17,7 @@
     "webpack-cli": "^3.3.6"
   },
   "scripts": {
+    "watch": "npx webpack --mode development --watch",
     "dev": "npx webpack --mode development",
     "prod": "npx webpack --mode production"
   },
