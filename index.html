@@ -30,18 +30,20 @@
                                 <div class="row mb-4">
                                     <div class="col text-center font-weight-bold" v-html="stageName"></div>
                                 </div>
-                                <div class="row mb-4">
-                                    <div class="col"></div>
-                                    <template v-for="(config) in stageConfigs" v-if="stageData[config.name]">
-                                        <div class="col-1 text-center">
-                                            {{ config.icon }}
+                                <template v-for="(description, config) in stageConfigs" v-if="stageData[config]">
+                                    <div class="row">
+                                        <div class="col text-right">
+                                            <label :for="stageName + config">{{description}}:&nbsp;</label>
+                                            <input class="input-control w-25" :id="stageName + config" :name="stageName + config" type="text" v-model="stageData[config]"/>
                                         </div>
-                                        <div class="col-3 text-center">
-                                            <input class="form-control" :id="stageName + config.name" :name="stageName + config.name" type="text" v-model="stageData[config.name]"/>
+                                    </div>
+                                    <div class="row" v-if="config ==='diceCount'">
+                                        <div class="col text-right">
+                                            <p>Average utilization, %: {{stageData.averageUtilization}}</p>
                                         </div>
-                                    </template>
-                                    <div class="col"></div>
-                                </div>
+                                    </div>
+                                </template>
+
                             </td>
                         </tr>
                         <tr class="b-header2-row">
@@ -70,12 +72,7 @@
                 </div>
             </div>
             <div class="row pl-3">
-                <div class="col">
-                    <h6>Utilization <span id="utilInfo" :class="info.util.styleClass">[{{info.util.description}}: {{info.util.value}} {{info.util.sign}}]</span></h6>
-                </div>
-            </div>
-            <div class="row pl-3">
-                <div class="col-4" v-for="(diagramData, diagramName) in info"  v-if="diagramName!=='util'">
+                <div class="col-4" v-for="(diagramData, diagramName) in info" v-if="diagramName!=='util'">
                     <h6 @click="diagramData.visible = !diagramData.visible" style=" cursor: pointer;">
                         {{diagramData.name}}
                         <span :id="diagramName + 'Info'" :class="diagramData.styleClass">[{{diagramData.description}}: {{diagramData.value}} {{diagramData.sign}}]</span>

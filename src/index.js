@@ -35,8 +35,8 @@ let board = null;
 let tracing = [];
 
 Vue.component("b-cards", {
-   props: ["cards"],
-   template: "<div><b-card :card=\"card\" v-for=\"(card) in cards\"></b-card></div>"
+    props: ["cards"],
+    template: "<div><b-card :card=\"card\" v-for=\"(card) in cards\"></b-card></div>"
 });
 
 Vue.component("b-card", {
@@ -50,8 +50,8 @@ Vue.component("b-card", {
 });
 
 Vue.component("b-estimation", {
-   props: ["stage", "burned"],
-   template: "<div :class=\"'b-'+stage + ' b-estimation' + (burned ? ' b-burned-' +  stage: '' )\"></div>"
+    props: ["stage", "burned"],
+    template: "<div :class=\"'b-'+stage + ' b-estimation' + (burned ? ' b-burned-' +  stage: '' )\"></div>"
 });
 
 Vue.use(VueFullscreen);
@@ -65,14 +65,6 @@ let app = new Vue({
             isFullscreen: false,
         },
         info: {
-            util: {
-                name: "Utilization",
-                description: "Utilization, %",
-                styleClass: "info_positive",
-                sign: "",
-                value: 0,
-                visible: false
-            },
             cfd: {
                 name: "Cumulative flow diagram",
                 description: "How many issues is in progress",
@@ -98,11 +90,11 @@ let app = new Vue({
                 visible: false
             }
         },
-        stageConfigs: [
-            {name: "limit", icon: "⚠"},
-            {name: "diceCount", icon: "🎲"},
-            {name: "delay", icon: "⏳"}
-        ],
+        stageConfigs: {
+            limit: "Limit",
+            diceCount: "Workers",
+            delay: "Delay"
+        },
         stages: {
             ready: {
                 limit: 4,
@@ -115,6 +107,8 @@ let app = new Vue({
                 limit: 2,
                 diceCount: 2,
                 complexity: 2,
+                diceIcon: "👩🏻‍🦰",
+                averageUtilization: 0,
                 isInnerDone: true,
                 cards: {
                     wip: [],
@@ -125,6 +119,8 @@ let app = new Vue({
                 limit: 4,
                 diceCount: 3,
                 complexity: 1,
+                diceIcon: "🧔🏻",
+                averageUtilization: 0,
                 isInnerDone: true,
                 cards: {
                     wip: [],
@@ -135,6 +131,8 @@ let app = new Vue({
                 limit: 3,
                 diceCount: 2,
                 complexity: 3,
+                diceIcon: "👱🏽‍♀",
+                averageUtilization: 0,
                 isInnerDone: false,
                 cards: {
                     wip: []
@@ -154,9 +152,7 @@ let app = new Vue({
                 }
             }
         },
-        boardData : {
-
-        }
+        boardData: {}
     },
     methods: {
         construct: function () {
@@ -169,7 +165,7 @@ let app = new Vue({
             });
             board = new Board(config);
         },
-        about: function() {
+        about: function () {
             return window.open('https://timmson.github.io');
         },
         reset: function (event) {
@@ -199,6 +195,10 @@ let app = new Vue({
         },
         tickDown: function () {
             this.boardData = isPlaying ? board.turn() : board.view();
+            Object.keys(this.boardData.utilization).forEach(stageName => {
+                this.stages[stageName].averageUtilization = this.boardData.utilization[stageName].average;
+            });
+
             Object.keys(this.boardData.columns).forEach(stageName => {
                 this.stages[stageName].cards = this.boardData.columns[stageName];
             });
@@ -210,12 +210,11 @@ let app = new Vue({
         },
         draw: function () {
             widthCanvas = window.innerWidth * 0.33,//Math.max(window.innerWidth * 0.25, minWidthCanvas);
-            widthBoard = widthCanvas - 2 * shiftX;
+                widthBoard = widthCanvas - 2 * shiftX;
             heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
             heightBoard = heightCanvas - 2 * shiftY;
             $("canvas").attr("width", widthCanvas);
             $("canvas").attr("height", heightCanvas);
-            //drawUtil(null, this.boardData);
             drawCFD(document.getElementById("cfd").getContext("2d"), this.boardData);
             drawCC(document.getElementById("cc").getContext("2d"), this.boardData);
             drawDD(document.getElementById("dd").getContext("2d"), this.boardData);
@@ -244,10 +243,6 @@ let app = new Vue({
         window.removeEventListener("keyup", this.handleKey)
     }
 });
-
-function drawUtil(ctx, data) {
-    app.info.util.value = "👩🏻‍🦰 - " + data.currentDayUtilization.analysis + "% ,🧔🏻 - " + data.currentDayUtilization.development + "%,👱🏽‍♀ - " + data.currentDayUtilization.testing + "%";
-}
 
 function drawLabel(ctx, x, y, font, color, value) {
     ctx.font = font;

@@ -35,7 +35,7 @@
     "getkanban"
   ],
   "author": "timmson",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/timmson/kanban-game/issues"
   },

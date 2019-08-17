@@ -11,8 +11,9 @@ function Board(_config) {
 
     board = {
         columns: {},
+        utilization: {},
         currentDay: 0,
-        currentCardNumber: 0
+        currentCardNumber: 0,
     };
 
     config.stages.forEach((stage, i) => {
@@ -57,7 +58,6 @@ Board.prototype.view = function () {
 Board.prototype.turn = function () {
     board.currentDay++;
 
-    board.currentDayUtilization = {}
     config.stages.map(stage => stage.name).reverse().forEach(stage => {
         let column = board.columns[stage];
         move(column);
@@ -71,7 +71,7 @@ Board.prototype.turn = function () {
         if (column.dices !== undefined) {
             let score = getScore(stage);
 
-            board.currentDayUtilization[stage] = score;
+            board.utilization[stage] = {average: score};
 
             while (score > 0 && column.wip.length > 0) {
                 if (score < column.wip[0].remainings[stage]) {
@@ -88,7 +88,7 @@ Board.prototype.turn = function () {
                 }
             }
 
-            board.currentDayUtilization[stage] = Math.floor((1 - (score / board.currentDayUtilization[stage])) * 100);
+            board.utilization[stage] = {average: Math.floor((1 - (score / board.utilization[stage].average)) * 100)};
         }
     });
 

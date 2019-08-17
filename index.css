@@ -7092,7 +7092,7 @@ span.info_negative {
   color: red; }
 
 .b-table {
-  min-width: 1200px;
+  min-width: 1000px;
   width: 98%; }
 
 .b-column {
@@ -7144,7 +7144,7 @@ span.info_negative {
   font-size: 14px; }
 
 .b-header-row {
-  height: 100px; }
+  height: 200px; }
   .b-header-row .b-column {
     border-top-width: 3px;
     border-left-width: 3px; }

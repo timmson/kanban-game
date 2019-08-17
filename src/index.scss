@@ -11,7 +11,6 @@ $deployed-color: #000000;
 
 $column-width: 3px;
 
-
 div.navbar a {
     font-size: 30px;
 }
@@ -25,7 +24,7 @@ span.info_negative {
 }
 
 .b-table {
-    min-width: 1200px;
+    min-width: 1000px;
     width: 98%;
 }
 
@@ -89,7 +88,7 @@ span.info_negative {
 }
 
 .b-header-row {
-    height: 100px;
+    height: 200px;
 
     .b-column {
         border-top-width: $column-width;
