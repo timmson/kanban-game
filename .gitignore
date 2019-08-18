@@ -1,4 +1,4 @@
 .idea
 node_modules
-./index.js
-./index.css
+index.css
+index.js
