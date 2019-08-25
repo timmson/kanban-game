@@ -11,8 +11,7 @@
 ## Install and run
 ```
 npm i
-sudo npm i -d webpack webpack-cli
-webpack
+npm run dev
 ```
 
 ## Live demo
