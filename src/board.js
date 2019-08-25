@@ -1,3 +1,7 @@
+//const Util = require("./util");
+const Dice = require("./dice");
+const Card = require("./card");
+
 class Board {
 
     constructor(_config) {
@@ -40,7 +44,7 @@ class Board {
             column.limit = stage.limit;
         }
         if (stage.diceCount !== undefined) {
-            column.dices = this.generateDices(stage.diceCount, stage.name);
+            column.dices = Dice.generateDices(stage.name, this.getWorkStages(), stage.diceCount);
         }
         if (stage.delay !== undefined) {
             column.delay = stage.delay;
@@ -107,57 +111,16 @@ class Board {
     }
 
     getScore(type) {
-        let count = 0;
-        this.board.columns[type].dices.forEach(dice => {
-            count += dice[this.getRandomInt(0, 5)][type];
-        });
-        return count;
+        return Dice.getScore(type, this.board.columns[type].dices);
     }
 
     getWorkStages() {
         return this.config.stages.filter(stage => stage.diceCount > 0).map(stage => stage.name);
     }
 
-    generateDices(count, type) {
-        let dice = [];
-        for (let i = 0; i < 6; i++) {
-            let diceSide = {};
-            this.getWorkStages().forEach(stage =>
-                diceSide[stage] = this.generateDiceSide(stage, type)
-            );
-            dice.push(diceSide);
-        }
-
-        let dices = [];
-        for (let i = 0; i < count; i++) {
-            dices.push(dice);
-        }
-        return dices;
-    }
-
-    generateDiceSide(stage, type) {
-        return (stage === type) ? this.getRandomInt(1, 4) : this.getRandomInt(0, 2)
-    }
-
     generateCard() {
-        let estimations = {};
-        this.getWorkStages().forEach(stage =>
-            estimations[stage] = (stage === "testing" ? this.getRandomInt(5, 15) : this.getRandomInt(2, 10))
-        );
         this.board.currentCardNumber++;
-        return {
-            "cardId": "S" + this.board.currentCardNumber.toString().padStart(3, "0"),
-            "estimations": estimations,
-            "remainings": Object.assign({}, estimations),
-            "startDay": this.board.currentDay,
-            "endDay": 0,
-            "cycleTime": 0
-        };
-    }
-
-
-    getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
+        return Card.generateCard(this.board.currentCardNumber, this.board.currentDay, this.getWorkStages());
     }
 }
 

@@ -3,7 +3,7 @@ require("mocha");
 
 const Board = require("../src/board");
 
-describe("Test1", () => {
+describe("Board test", () => {
 
     let config = {
         stages: [
@@ -14,40 +14,21 @@ describe("Test1", () => {
             {
                 name: "testing",
                 diceCount: 2
+            },
+            {
+                name: "done"
             }
         ]
     };
 
     let board = new Board(config);
 
-    it("when generate dices then filled dices is returned", ()=> {
-        let dices = board.generateDices(10, "testing");
-
-        expect(dices).to.have.lengthOf(10);
+    it("when view calls then current board is returned", () => {
+        let result = board.view();
     });
 
-    it("when generate primary dice side then filled dice slide is returned",() =>{
-        let diceSlide = board.generateDiceSide("testing", "testing");
+    /*it("when view calls then current board is returned", () => {
+        let result = board.turn();
+    });*/
 
-        expect(diceSlide).to.be.within(1,4);
-    });
-
-    it("when generate secondary dice side then filled dice slide is returned",() =>{
-        let diceSlide = board.generateDiceSide("testing", "someStage");
-
-        expect(diceSlide).to.be.within(0,2);
-    });
-
-    it("when generate card then filled card is returned", () => {
-        let card = board.generateCard();
-
-        expect(card).to.have.property("cardId", "S001");
-        expect(card.estimations).to.have.all.keys(["someStage", "testing"]);
-    });
-
-    it("when random calls then it generates any number between min and max", () => {
-        let result = board.getRandomInt(10, 16);
-
-        expect(result).to.be.within(9, 16);
-    });
 });
