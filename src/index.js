@@ -58,7 +58,7 @@ Vue.use(VueFullscreen);
 let app = new Vue({
     el: "#app",
     data: {
-        startButton: "▶",
+        startButton: "⏯⏯⏯⏯⏯⏯⏯",
         resetButton: "🔄",
         fullscreenButton: "🎦",
         toggles: {
@@ -168,18 +168,18 @@ let app = new Vue({
         about: function () {
             return window.open('https://timmson.github.io');
         },
-        reset: function (event) {
+        reset: function () {
             if (isPlaying) {
                 this.startToggle();
             }
             this.construct();
         },
-        startToggle: function (event) {
+        startToggle: function () {
             isPlaying = !isPlaying;
             this.startButton = isPlaying ? "⏸" : "▶";
             this.tickDown();
         },
-        handleResize: function (event) {
+        handleResize: function () {
             if (!isPlaying && board !== null) {
                 this.tickDown();
             }
@@ -483,7 +483,7 @@ function drawGrid(ctx, spec, xLabel, yLabel) {
     ctx.lineWidth = 1;
 }
 
-function ca(ctx, x, y, r, color, done, all) {
+/*function ca(ctx, x, y, r, color, done, all) {
     ctx.lineWidth = 1;
     for (let i = 0; i < all; i++) {
         ctx.beginPath();
@@ -495,7 +495,7 @@ function ca(ctx, x, y, r, color, done, all) {
             ctx.fill();
         }
     }
-}
+}*/
 
 function ln(ctx, x1, y1, x2, y2, color, dashed) {
     ctx.setLineDash(dashed);

@@ -1,165 +1,164 @@
-module.exports = Board;
+class Board {
 
-let config = {};
+    constructor(_config) {
+        if (_config !== undefined) {
+            this.config = _config;
+        }
 
-let board = {};
-
-function Board(_config) {
-    if (_config !== undefined) {
-        config = _config;
-    }
-
-    board = {
-        columns: {},
-        utilization: {},
-        currentDay: 0,
-        currentCardNumber: 0,
-    };
-
-    config.stages.forEach((stage, i) => {
-        board.columns[stage.name] = {
-            "index": i,
-            "wip": []
+        this.board = {
+            columns: {},
+            utilization: {},
+            currentDay: 0,
+            currentCardNumber: 0,
         };
-        if (stage.isInnerDone) {
-            board.columns[stage.name].done = [];
-        }
-        this.updateColumn(stage, board.columns[stage.name]);
 
-        if (i === 0) {
-            while (board.columns[stage.name].wip.length < board.columns[stage.name].limit) {
-                board.columns[stage.name].wip.push(generateCard());
+        this.config.stages.forEach((stage, i) => {
+            this.board.columns[stage.name] = {
+                "index": i,
+                "wip": []
+            };
+            if (stage.isInnerDone) {
+                this.board.columns[stage.name].done = [];
             }
-        }
+            this.updateColumn(stage, this.board.columns[stage.name]);
 
-    });
-}
-
-Board.prototype.updatedConfig = function (config) {
-    config.stages.forEach(stage => this.updateColumn(stage, board.columns[stage.name]));
-};
-
-Board.prototype.updateColumn = function (stage, column) {
-    if (stage.limit !== undefined) {
-        column.limit = stage.limit;
-    }
-    if (stage.diceCount !== undefined) {
-        column.dices = generateDices(stage.diceCount, stage.name);
-    }
-    if (stage.delay !== undefined) {
-        column.delay = stage.delay;
-    }
-};
-
-Board.prototype.view = function () {
-    return board;
-};
-
-Board.prototype.turn = function () {
-    board.currentDay++;
-
-    config.stages.map(stage => stage.name).reverse().forEach(stage => {
-        let column = board.columns[stage];
-        move(column);
-
-        if (stage === "deployed") {
-            board.columns[stage].wip.filter(card => card.endDay === 0).forEach(card => {
-                card.endDay = board.currentDay;
-            });
-        }
-
-        if (column.dices !== undefined) {
-            let score = getScore(stage);
-
-            board.utilization[stage] = {average: score};
-
-            while (score > 0 && column.wip.length > 0) {
-                if (score < column.wip[0].remainings[stage]) {
-                    column.wip[0].remainings[stage] -= score;
-                    score = 0;
-                } else {
-                    score -= column.wip[0].remainings[stage];
-                    column.wip[0].remainings[stage] = 0;
-                    if (column.done !== undefined) {
-                        column.done.push(column.wip.shift());
-                    } else {
-                        Object.values(board.columns).filter(c => c.index === column.index + 1)[0].wip.push(column.wip.shift());
-                    }
+            if (i === 0) {
+                while (this.board.columns[stage.name].wip.length < this.board.columns[stage.name].limit) {
+                    this.board.columns[stage.name].wip.push(this.generateCard());
                 }
             }
 
-            board.utilization[stage] = {average: Math.floor((1 - (score / board.utilization[stage].average)) * 100)};
+        });
+    }
+
+    updatedConfig(config) {
+        config.stages.forEach(stage => this.updateColumn(stage, this.board.columns[stage.name]));
+    }
+
+    updateColumn(stage, column) {
+        if (stage.limit !== undefined) {
+            column.limit = stage.limit;
         }
-    });
+        if (stage.diceCount !== undefined) {
+            column.dices = this.generateDices(stage.diceCount, stage.name);
+        }
+        if (stage.delay !== undefined) {
+            column.delay = stage.delay;
+        }
+    }
 
-    return this.view();
-};
+    view() {
+        return this.board;
+    }
 
-function move(column) {
-    let card = {};
-    while ((column.limit !== undefined ? (column.wip.length + (column.done !== undefined ? column.done.length : 0) < column.limit) : true) && card !== undefined) {
-        let previousColumn = Object.values(board.columns).filter(c => c.index === column.index - 1)[0];
-        if ((column.delay !== undefined && column.delay >= 2 && board.currentDay % column.delay !== 0) || (previousColumn !== undefined && previousColumn.done === undefined && previousColumn.dices !== undefined)) {
-            card = undefined;
-        } else {
-            card = (previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : generateCard());
-            if (card !== undefined) {
-                column.wip.push(card);
+    turn() {
+        this.board.currentDay++;
+
+        this.config.stages.map(stage => stage.name).reverse().forEach(stage => {
+            let column = this.board.columns[stage];
+            this.move(column);
+
+            if (stage === "deployed") {
+                this.board.columns[stage].wip.filter(card => card.endDay === 0).forEach(card => {
+                    card.endDay = this.board.currentDay;
+                });
+            }
+
+            if (column.dices !== undefined) {
+                let score = this.getScore(stage);
+
+                this.board.utilization[stage] = {average: score};
+
+                while (score > 0 && column.wip.length > 0) {
+                    if (score < column.wip[0].remainings[stage]) {
+                        column.wip[0].remainings[stage] -= score;
+                        score = 0;
+                    } else {
+                        score -= column.wip[0].remainings[stage];
+                        column.wip[0].remainings[stage] = 0;
+                        if (column.done !== undefined) {
+                            column.done.push(column.wip.shift());
+                        } else {
+                            Object.values(this.board.columns).filter(c => c.index === column.index + 1)[0].wip.push(column.wip.shift());
+                        }
+                    }
+                }
+
+                this.board.utilization[stage] = {average: Math.floor((1 - (score / this.board.utilization[stage].average)) * 100)};
+            }
+        });
+
+        return this.view();
+    }
+
+    move(column) {
+        let card = {};
+        while ((column.limit !== undefined ? (column.wip.length + (column.done !== undefined ? column.done.length : 0) < column.limit) : true) && card !== undefined) {
+            let previousColumn = Object.values(this.board.columns).filter(c => c.index === column.index - 1)[0];
+            if ((column.delay !== undefined && column.delay >= 2 && this.board.currentDay % column.delay !== 0) || (previousColumn !== undefined && previousColumn.done === undefined && previousColumn.dices !== undefined)) {
+                card = undefined;
+            } else {
+                card = (previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : this.generateCard());
+                if (card !== undefined) {
+                    column.wip.push(card);
+                }
             }
         }
     }
-}
 
-function getScore(type) {
-    let count = 0;
-    board.columns[type].dices.forEach(dice => {
-        count += dice[getRandomInt(0, 5)][type];
-    });
-    return count;
-}
+    getScore(type) {
+        let count = 0;
+        this.board.columns[type].dices.forEach(dice => {
+            count += dice[this.getRandomInt(0, 5)][type];
+        });
+        return count;
+    }
 
-function getWorkStages() {
-    return config.stages.filter(stage => stage.diceCount > 0).map(stage => stage.name);
-}
+    getWorkStages() {
+        return this.config.stages.filter(stage => stage.diceCount > 0).map(stage => stage.name);
+    }
 
-function generateDices(count, type) {
-    let dice = [];
-    for (let i = 0; i < 6; i++) {
-        let diceSide = {};
-        getWorkStages().forEach(stage =>
-            diceSide[stage] = generateDiceSide(stage, type)
+    generateDices(count, type) {
+        let dice = [];
+        for (let i = 0; i < 6; i++) {
+            let diceSide = {};
+            this.getWorkStages().forEach(stage =>
+                diceSide[stage] = this.generateDiceSide(stage, type)
+            );
+            dice.push(diceSide);
+        }
+
+        let dices = [];
+        for (let i = 0; i < count; i++) {
+            dices.push(dice);
+        }
+        return dices;
+    }
+
+    generateDiceSide(stage, type) {
+        return (stage === type) ? this.getRandomInt(1, 4) : this.getRandomInt(0, 2)
+    }
+
+    generateCard() {
+        let estimations = {};
+        this.getWorkStages().forEach(stage =>
+            estimations[stage] = (stage === "testing" ? this.getRandomInt(5, 15) : this.getRandomInt(2, 10))
         );
-        dice.push(diceSide);
+        this.board.currentCardNumber++;
+        return {
+            "cardId": "S" + this.board.currentCardNumber.toString().padStart(3, "0"),
+            "estimations": estimations,
+            "remainings": Object.assign({}, estimations),
+            "startDay": this.board.currentDay,
+            "endDay": 0,
+            "cycleTime": 0
+        };
     }
 
-    let dices = [];
-    for (let i = 0; i < count; i++) {
-        dices.push(dice);
+
+    getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
     }
-    return dices;
 }
 
-function generateDiceSide(stage, type) {
-    return (stage === type) ? getRandomInt(1, 4) : getRandomInt(0, 2)
-}
-
-function generateCard() {
-    let estimations = {};
-    getWorkStages().forEach(stage =>
-        estimations[stage] = (stage === "testing" ? getRandomInt(5, 15) : getRandomInt(2, 10))
-    );
-    board.currentCardNumber++;
-    return {
-        "cardId": "S" + board.currentCardNumber.toString().padStart(3, "0"),
-        "estimations": estimations,
-        "remainings": Object.assign({}, estimations),
-        "startDay": board.currentDay,
-        "endDay": 0,
-        "cycleTime": 0
-    };
-}
-
-
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
+module.exports = Board;
