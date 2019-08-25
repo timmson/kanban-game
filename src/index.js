@@ -58,7 +58,7 @@ Vue.use(VueFullscreen);
 let app = new Vue({
     el: "#app",
     data: {
-        startButton: "⏯⏯⏯⏯⏯⏯⏯",
+        startButton: "⏯",
         resetButton: "🔄",
         fullscreenButton: "🎦",
         toggles: {
