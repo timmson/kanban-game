@@ -63,7 +63,7 @@ class Board {
 
         this.config.stages.map(stage => stage.name).reverse().forEach(stage => {
             let column = this.board.columns[stage];
-            this.move(column);
+            this.move(new Column(column));
 
             if (stage === "deployed") {
                 this.board.columns[stage].wip.filter(card => card.endDay === 0).forEach(card => {
@@ -100,15 +100,15 @@ class Board {
 
     move(column) {
         let card = {};
-        while (Column.hasAvailableSlots(column) && card !== undefined) {
-            let previousColumn = this.getPreviousColumn(column.index);
+        while (column.hasAvailableSlots() && card !== undefined) {
+            let previousColumn = this.getPreviousColumn(column.getIndex());
 
-            if (Column.isDelayed(column, this.board.currentDay) || (previousColumn !== undefined && !Column.isAvailableForPulling(previousColumn))) {
+            if (column.isDelayed(this.board.currentDay) || (previousColumn !== undefined && !new Column(previousColumn).isAvailableForPulling())) {
                 card = undefined;
             } else {
                 card = (previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : this.generateCard());
                 if (card !== undefined) {
-                    column.wip.push(card);
+                    column.pull(card);
                 }
             }
 
