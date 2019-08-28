@@ -3,33 +3,33 @@ require("mocha");
 
 const Dice = require("../src/dice");
 
-describe("Dice test", () => {
+describe("Dice(s) should", () => {
 
-    it("when dices roll then some score appears", () => {
+    it("return score when roll", () => {
         let score = Dice.getScore("testing", Dice.generateDices("testing", ["testing", "someStage"], 10));
 
         expect(score).to.be.within(1 * 10, 4 * 10);
     });
 
-    it("when generate 10 dices then filled 10 dices is returned", () => {
+    it("be generated when stage,working stage and count are given", () => {
         let dices = Dice.generateDices("testing", ["testing", "someStage"], 10);
 
         expect(dices).to.have.lengthOf(10);
     });
 
-    it("when generate 1 dice then filled 1 dice is returned", () => {
+    it("be generated at once when stage and working stage are given", () => {
         let dice = Dice.generateDice("testing", ["testing", "someStage"]);
 
         expect(dice).to.have.lengthOf(6);
     });
 
-    it("when generate primary dice side then filled dice slide is returned", () => {
+    it("generate primary dice slide with score 1:4 when stage and working stage are equal", () => {
         let diceSlide = Dice.generateDiceSide("testing", "testing");
 
         expect(diceSlide).to.be.within(1, 4);
     });
 
-    it("when generate secondary dice side then filled dice slide is returned", () => {
+    it("generate primary dice slide with score 0:2 when stage and working stage are not  equal", () => {
         let diceSlide = Dice.generateDiceSide("testing", "someStage");
 
         expect(diceSlide).to.be.within(0, 2);

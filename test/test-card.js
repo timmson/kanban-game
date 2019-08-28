@@ -3,9 +3,9 @@ require("mocha");
 
 const Card = require("../src/card");
 
-describe("Card test", () => {
+describe("Card should", () => {
 
-    it("when generate card then filled card is returned", () => {
+    it("generate filled card when id,currentDay and working stages are given", () => {
         let card = Card.generateCard(1, 1,["someStage", "testing"]);
 
         expect(card).to.have.property("cardId", "S001");

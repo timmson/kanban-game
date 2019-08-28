@@ -3,9 +3,9 @@ require("mocha");
 
 const Util = require("../src/util");
 
-describe("Util test", () => {
+describe("Util should", () => {
 
-    it("when random calls then it generates any number between min and max", () => {
+    it("return random number in range 10:16", () => {
         let result = Util.getRandomInt(10, 16);
 
         expect(result).to.be.within(9, 16);

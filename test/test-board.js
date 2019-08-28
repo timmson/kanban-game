@@ -23,8 +23,10 @@ describe("Board test", () => {
 
     let board = new Board(config);
 
-    it("when view calls then current board is returned", () => {
+    it("when move card on column the move next as possible", () => {
         let result = board.view();
+
+        let result2 = board.move(result.columns["testing"]);
     });
 
     /*it("when view calls then current board is returned", () => {

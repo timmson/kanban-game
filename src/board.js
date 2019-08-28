@@ -1,6 +1,7 @@
 //const Util = require("./util");
 const Dice = require("./dice");
 const Card = require("./card");
+const Column = require("./column");
 
 class Board {
 
@@ -21,9 +22,11 @@ class Board {
                 "index": i,
                 "wip": []
             };
+
             if (stage.isInnerDone) {
                 this.board.columns[stage.name].done = [];
             }
+
             this.updateColumn(stage, this.board.columns[stage.name]);
 
             if (i === 0) {
@@ -69,7 +72,7 @@ class Board {
             }
 
             if (column.dices !== undefined) {
-                let score = this.getScore(stage);
+                let score = Dice.getScore(stage, this.board.columns[stage].dices);
 
                 this.board.utilization[stage] = {average: score};
 
@@ -97,9 +100,10 @@ class Board {
 
     move(column) {
         let card = {};
-        while ((column.limit !== undefined ? (column.wip.length + (column.done !== undefined ? column.done.length : 0) < column.limit) : true) && card !== undefined) {
-            let previousColumn = Object.values(this.board.columns).filter(c => c.index === column.index - 1)[0];
-            if ((column.delay !== undefined && column.delay >= 2 && this.board.currentDay % column.delay !== 0) || (previousColumn !== undefined && previousColumn.done === undefined && previousColumn.dices !== undefined)) {
+        while (Column.hasAvailableSlots(column) && card !== undefined) {
+            let previousColumn = this.getPreviousColumn(column.index);
+
+            if (Column.isDelayed(column, this.board.currentDay) || (previousColumn !== undefined && !Column.isAvailableForPulling(previousColumn))) {
                 card = undefined;
             } else {
                 card = (previousColumn !== undefined ? (previousColumn.done !== undefined ? previousColumn.done.shift() : previousColumn.wip.shift()) : this.generateCard());
@@ -107,11 +111,12 @@ class Board {
                     column.wip.push(card);
                 }
             }
+
         }
     }
 
-    getScore(type) {
-        return Dice.getScore(type, this.board.columns[type].dices);
+    getPreviousColumn(index) {
+        return Object.values(this.board.columns).filter(c => c.index === index - 1)[0];
     }
 
     getWorkStages() {
