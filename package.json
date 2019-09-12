@@ -26,7 +26,7 @@
     "webpack-cli": "^3.3.6"
   },
   "scripts": {
-    "lint": "npx eslint src/",
+    "lint": "npx eslint ./src/",
     "watch": "npx webpack --mode development --watch",
     "dev": "npx webpack --mode development",
     "test": "npx mocha",

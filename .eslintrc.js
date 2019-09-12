@@ -3,7 +3,7 @@ module.exports = {
         "browser": true,
         "commonjs": true,
         "es6": true,
-        "mocha":true
+        "mocha": true
     },
     "extends": "eslint:recommended",
     "globals": {
@@ -12,7 +12,24 @@ module.exports = {
     },
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType" : "module"
+        "sourceType": "module"
     },
-    "rules": {}
+    "rules": {
+        "indent": [
+            "error",
+            "tab"
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    }
 };
