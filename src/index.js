@@ -209,12 +209,11 @@ let app = new Vue({
 			}
 		},
 		draw: function () {
-			widthCanvas = window.innerWidth * 0.33,//Math.max(window.innerWidth * 0.25, minWidthCanvas);
+			widthCanvas = window.innerWidth * 0.33;//Math.max(window.innerWidth * 0.25, minWidthCanvas);
 			widthBoard = widthCanvas - 2 * shiftX;
 			heightCanvas = (minWidthCanvas / 1.68) + (widthCanvas - minWidthCanvas) * 0.2;
 			heightBoard = heightCanvas - 2 * shiftY;
-			$("canvas").attr("width", widthCanvas);
-			$("canvas").attr("height", heightCanvas);
+			$("canvas").attr("width", widthCanvas).attr("height", heightCanvas);
 			drawCFD(document.getElementById("cfd").getContext("2d"), this.boardData);
 			drawCC(document.getElementById("cc").getContext("2d"), this.boardData);
 			drawDD(document.getElementById("dd").getContext("2d"), this.boardData);
