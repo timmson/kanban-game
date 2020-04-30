@@ -4,11 +4,11 @@
   "description": "Implementation of getKanban Game",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "jquery": "3.4.1",
-    "popper.js": "^1.15.0",
-    "vue": "2.6.10",
-    "vue-fullscreen": "2.1.5"
+    "bootstrap": "4.4.1",
+    "jquery": "3.5.0",
+    "popper.js": "1.16.1",
+    "vue": "2.6.11",
+    "vue-fullscreen": "2.1.6"
   },
   "devDependencies": {
     "@types/chai": "4.2.11",
@@ -17,7 +17,7 @@
     "chai": "^4.2.0",
     "css-loader": "3.2.0",
     "eslint": "^6.8.0",
-    "mini-css-extract-plugin": "^0.8.0",
+    "mini-css-extract-plugin": "0.8.2",
     "mocha": "^6.2.3",
     "node-sass": "4.13.1",
     "nyc": "^15.0.1",
