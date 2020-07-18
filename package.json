@@ -19,7 +19,7 @@
     "eslint": "^6.8.0",
     "mini-css-extract-plugin": "0.8.2",
     "mocha": "^6.2.3",
-    "node-sass": "4.13.1",
+    "node-sass": "^4.14.1",
     "nyc": "^15.0.1",
     "postcss-loader": "3.0.0",
     "precss": "4.0.0",
@@ -28,7 +28,7 @@
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
-    "lint": "npx eslint ./src/",
+    "lint": "npx eslint ./src/ ./test/ --fix",
     "watch": "npx webpack --mode development --watch",
     "dev": "npx webpack --mode development",
     "test": "npx mocha",
