@@ -17,14 +17,31 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install
-      run: |
-        npm i mocha nyc codecov  -g
-        npm i
+
     - name: Lint and coverage
       run: |
+        npm i
         npm run lint
-        npm run coverage && codecov
+        npm run coverage && npx codecov
       env:
         CI: true
         CODECOV_TOKEN: 46782ced-a23b-4641-af00-0489051444aa
+
+    - name: Compile App
+      run: |
+        npm run prod
+      env:
+        CI: true
+
+    - name: Commit files
+      run: |
+        git config --local user.email "kanban-game[bot]@users.noreply.github.com"
+        git config --local user.name "kanban-game[bot]"
+        git add -A
+        git diff-index --quiet HEAD || git commit -m "Compile App"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
