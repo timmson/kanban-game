@@ -1,5 +1,3 @@
-require("mocha");
-
 const Board = require("../src/board");
 const Column = require("../src/column");
 
@@ -23,7 +21,7 @@ describe("Board test", () => {
 
 	let board = new Board(config);
 
-	it("when move card on column the move next as possible", () => {
+	test("when move card on column the move next as possible", () => {
 		let result = board.view();
 
 		board.move(new Column(result.columns["testing"]));
