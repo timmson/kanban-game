@@ -1,6 +1,6 @@
 # Kanban game
 
-[![status](https://travis-ci.org/timmson/kanban-game.svg?branch=master)](https://travis-ci.org/timmson/kanban-game)
+[![status](https://github.com/timmson/kanban-game/actions/workflows/nodejs.yml/badge.svg)](https://github.com/timmson/kanban-game/actions/workflows/nodejs.yml)
 [![codecov](https://codecov.io/gh/timmson/kanban-game/branch/master/graph/badge.svg)](https://codecov.io/gh/timmson/kanban-game)
 [![codacy](https://api.codacy.com/project/badge/Grade/846a907647054e34bf6fe0bf1bca8ff1)](https://www.codacy.com/app/timmson666/kanban-game)
 
