@@ -10,7 +10,7 @@
     <fullscreen :fullscreen.sync="toggles.isFullscreen" ref="fullscreen">
         <div class="container-fluid bg-white pl-0 pr-0">
             <div class="navbar navbar-expand navbar-dark bg-dark">
-                <ul class="navbar-nav ml-auto mr-3">
+                <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
                         <a href="#" @click="startToggle" id="startButton" v-html="startButton"></a>
                     </li>
@@ -85,7 +85,7 @@
             <div class="navbar navbar-expand navbar-dark bg-dark">
                 <ul class="navbar-nav ml-auto mr-3">
                     <li class="nav-item">
-                        <h6 class="text-light" @click="about" style="cursor: pointer;">timmson &copy; 2019</h6>
+                        <h6 class="text-light" @click="about" style="cursor: pointer;">timmson &copy; {{currentYear}}</h6>
                     </li>
                 </ul>
             </div>

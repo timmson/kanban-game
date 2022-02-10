@@ -58,6 +58,7 @@ Vue.use(VueFullscreen);
 let app = new Vue({
 	el: "#app",
 	data: {
+		currentYear: new Date().getFullYear(),
 		startButton: "⏯",
 		resetButton: "🔄",
 		fullscreenButton: "🎦",

@@ -1,35 +1,37 @@
 {
   "name": "kanban-game",
   "version": "1.0.0",
-  "description": "Implementation of getKanban Game",
+  "description": "Implementation of flow process",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.6.0",
+    "bootstrap": "^4.6.1",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
-    "vue": "^2.6.12",
-    "vue-fullscreen": "^2.3.5"
+    "vue": "^2.6.14",
+    "vue-fullscreen": "^2.6.1"
   },
   "devDependencies": {
-    "@babel/core": "7.14.2",
-    "@babel/preset-env": "7.14.2",
-    "babel-loader": "8.2.2",
-    "css-loader": "^5.2.4",
-    "eslint": "7.26.0",
-    "mini-css-extract-plugin": "^1.6.0",
-    "node-sass": "^6.0.0",
-    "postcss-loader": "^5.3.0",
-    "sass-loader": "^11.1.1",
-    "webpack": "^5.37.0",
-    "webpack-cli": "^4.7.0"
+    "@babel/core": "^7.17.2",
+    "@babel/preset-env": "^7.16.11",
+    "babel-loader": "^8.2.3",
+    "css-loader": "^6.6.0",
+    "eslint": "^8.8.0",
+    "mini-css-extract-plugin": "^2.5.3",
+    "node-sass": "^7.0.1",
+    "postcss-loader": "^6.2.1",
+    "sass-loader": "^12.4.0",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
   },
   "scripts": {
     "lint": "npx eslint ./src ./test --fix",
-    "watch": "npx webpack --mode development --watch",
-    "dev": "npx webpack --mode development",
     "test": "npx jest",
     "coverage": "npx jest --collectCoverage",
-    "prod": "npm run lint && npm run test && npx webpack --mode production"
+    "watch": "npx webpack --mode development --watch",
+    "dev": "npx webpack --mode development",
+    "prod": "npx webpack --mode production",
+    "start": "npx webpack serve --mode development"
   },
   "repository": {
     "type": "git",
