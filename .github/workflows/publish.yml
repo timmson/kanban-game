@@ -1,0 +1,43 @@
+name: Node CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Compile App
+        run: |
+          npm i
+          npm run prod
+        env:
+          CI: true
+
+      - name: Commit files
+        run: |
+          git config --local user.email "kanban-game[bot]@users.noreply.github.com"
+          git config --local user.name "kanban-game[bot]"
+          git add -A
+          git diff-index --quiet HEAD || git commit -m "Compile App"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

@@ -1,6 +1,6 @@
 name: Node CI
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
@@ -9,39 +9,28 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [ 16.x ]
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v3
 
-    - name: Lint and coverage
-      run: |
-        npm i
-        npm run lint
-        npm run coverage && npx codecov
-      env:
-        CI: true
-        CODECOV_TOKEN: 46782ced-a23b-4641-af00-0489051444aa
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Compile App
-      run: |
-        npm run prod
-      env:
-        CI: true
+      - name: Lint and coverage
+        run: |
+          npm i
+          npm run lint
+          npm run coverage && npx codecov
+        env:
+          CI: true
+          CODECOV_TOKEN: 46782ced-a23b-4641-af00-0489051444aa
 
-    - name: Commit files
-      run: |
-        git config --local user.email "kanban-game[bot]@users.noreply.github.com"
-        git config --local user.name "kanban-game[bot]"
-        git add -A
-        git diff-index --quiet HEAD || git commit -m "Compile App"
+      - name: Compile App
+        run: |
+          npm run prod
+        env:
+          CI: true
 
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
