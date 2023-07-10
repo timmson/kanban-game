@@ -1,11 +1,11 @@
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const devMode = process.env.NODE_ENV !== "production";
+const outputDir = path.resolve(__dirname, "./docs");
 
 module.exports = {
 	entry: "./src/index.js",
 	output: {
-		path: path.resolve(__dirname, "./"),
+		path: outputDir,
 		filename: "index.js"
 	},
 	module: {
@@ -43,7 +43,7 @@ module.exports = {
 	],
 	devServer: {
 		static: {
-			directory: path.resolve(__dirname, "./"),
+			directory: outputDir,
 		},
 		compress: true,
 		port: 3000
