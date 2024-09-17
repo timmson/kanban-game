@@ -4,7 +4,7 @@
   "description": "Implementation of flow process",
   "private": true,
   "dependencies": {
-    "bootstrap": "^4.6.1",
+    "bootstrap": "^5.0.0",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
     "vue": "^2.6.14",
