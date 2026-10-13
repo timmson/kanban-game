@@ -23,7 +23,7 @@
     "sass-loader": "^13.3.3",
     "webpack": "^5.110.3",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.15.2"
+    "webpack-dev-server": "^6.0.0"
   },
   "scripts": {
     "lint": "npx eslint ./src ./test --fix",
